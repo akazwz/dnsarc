@@ -1,0 +1,15 @@
+# Service for the dnsarc-api
+apiVersion: v1
+kind: Service
+metadata:
+  name: dnsarc-api-svc
+  labels:
+    app: dnsarc-api
+spec:
+  selector:
+    app: dnsarc-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP

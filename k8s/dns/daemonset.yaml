@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: dnsarc-dns-daemonset
+  labels:
+    app: dnsarc-dns
+spec:
+  selector:
+    matchLabels:
+      app: dnsarc-dns
+  template:
+    metadata:
+      labels:
+        app: dnsarc-dns
+    spec:
+      containers:
+        - name: dnsarc-dns
+          image: akazwz/dnsarc:latest
+          command: ["/app/dnsarc"]
+          args: ["dns"]
+          ports:
+            - containerPort: 53
+              hostPort: 53
+              protocol: UDP
+              name: dns-udp
+            - containerPort: 53
+              hostPort: 53
+              protocol: TCP
+              name: dns-tcp
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: dnsarc-config
+                  key: DATABASE_URL
+            - name: NS1
+              valueFrom:
+                secretKeyRef:
+                  name: dnsarc-config
+                  key: NS1
+            - name: NS2
+              valueFrom:
+                secretKeyRef:
+                  name: dnsarc-config
+                  key: NS2
+            - name: MBOX
+              valueFrom:
+                secretKeyRef:
+                  name: dnsarc-config
+                  key: MBOX
+          securityContext:
+            capabilities:
+              add:
+                - NET_BIND_SERVICE
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+      dnsPolicy: Default

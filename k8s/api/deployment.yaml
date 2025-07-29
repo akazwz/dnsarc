@@ -1,0 +1,38 @@
+# Deployment for the dnsarc-api
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dnsarc-api
+  labels:
+    app: dnsarc-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dnsarc-api
+  template:
+    metadata:
+      labels:
+        app: dnsarc-api
+    spec:
+      containers:
+        - name: dnsarc-api
+          image: akazwz/dnsarc:latest
+          imagePullPolicy: Always
+          command: ["/app/dnsarc"]
+          args: ["api"]
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: dnsarc-config
+                  key: DATABASE_URL
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: dnsarc-config
+                  key: JWT_SECRET
+
