@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"encoding/json"
 	"log/slog"
 	"net/http"
 	"os"
@@ -10,12 +9,18 @@ import (
 	"syscall"
 	"time"
 
+	"connectrpc.com/connect"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 	"gorm.io/gorm"
 
+	"dnsarc/gen/auth/v1/authv1connect"
 	"dnsarc/internal/database"
-	"dnsarc/internal/models"
+	"dnsarc/internal/handlers"
+	"dnsarc/internal/interceptors"
+	"dnsarc/internal/services"
 )
 
 type Server struct {
@@ -58,9 +63,10 @@ func (s *Server) Start() error {
 	// 添加基本路由
 	s.setupRoutes(r)
 
+	// 创建 HTTP/2 服务器
 	server := &http.Server{
 		Addr:    ":" + s.config.Port,
-		Handler: r,
+		Handler: h2c.NewHandler(r, &http2.Server{}),
 	}
 
 	// 创建一个通道来接收错误
@@ -68,7 +74,7 @@ func (s *Server) Start() error {
 
 	// 在 goroutine 中启动服务器
 	go func() {
-		slog.Info("starting HTTP server", "port", s.config.Port)
+		slog.Info("starting HTTP/2 server", "port", s.config.Port)
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			errChan <- err
 		}
@@ -108,23 +114,8 @@ func (s *Server) setupRoutes(r chi.Router) {
 			slog.Error("failed to write health response", "error", err)
 		}
 	})
-
-	// API 路由组
-	r.Route("/api", func(r chi.Router) {
-		// 这里可以添加更多的 API 路由
-		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusOK)
-			if _, err := w.Write([]byte("DNS Arc API")); err != nil {
-				slog.Error("failed to write API response", "error", err)
-			}
-		})
-		r.Post("/dns_records", func(w http.ResponseWriter, r *http.Request) {
-			var dnsRecord models.DNSRecord
-			if err := json.NewDecoder(r.Body).Decode(&dnsRecord); err != nil {
-				slog.Error("failed to decode DNS record", "error", err)
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-		})
-	})
+	jwtService := services.NewJwtService(s.config.JwtSecret)
+	authInterceptor := interceptors.NewAuthInterceptor(jwtService)
+	authHandler := handlers.NewAuthHandler(s.db, jwtService)
+	r.Mount(authv1connect.NewAuthServiceHandler(authHandler, connect.WithInterceptors(authInterceptor)))
 }

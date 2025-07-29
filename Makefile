@@ -1,19 +1,22 @@
 lint:
-	golangci-lint run
+	cd backend && golangci-lint run
 
 DOCKER_USERNAME := akazwz
 IMAGE_NAME      := $(DOCKER_USERNAME)/dnsarc
 
+gen: 
+	buf generate
+
 build:
-	docker buildx build --platform linux/amd64 -t $(IMAGE_NAME):latest --load .
+	cd backend && docker buildx build --platform linux/amd64 -t $(IMAGE_NAME):latest --load .
 
 push:
-	docker buildx build --platform linux/amd64 -t $(IMAGE_NAME):latest --push .
+	cd backend && docker buildx build --platform linux/amd64 -t $(IMAGE_NAME):latest --push .
 
 deploy:
-	kubectl apply -f k8s/base/
-	kubectl apply -f k8s/api/
-	kubectl apply -f k8s/dns/
+	kubectl apply -f backend/k8s/base/
+	kubectl apply -f backend/k8s/api/
+	kubectl apply -f backend/k8s/dns/
 
 update:
 	kubectl rollout restart daemonset dnsarc-dns-daemonset
@@ -21,4 +24,4 @@ update:
 
 secret:
 	kubectl delete secret dnsarc-config --ignore-not-found=true
-	kubectl create secret generic dnsarc-config --from-env-file=.env
+	kubectl create secret generic dnsarc-config --from-env-file=backend/.env
