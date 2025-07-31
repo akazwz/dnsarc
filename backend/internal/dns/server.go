@@ -16,6 +16,7 @@ import (
 	"github.com/bits-and-blooms/bloom/v3"
 	"github.com/miekg/dns"
 	"github.com/redis/go-redis/v9"
+	"github.com/samber/lo"
 	"github.com/weppos/publicsuffix-go/publicsuffix"
 	"gorm.io/gorm"
 
@@ -270,6 +271,15 @@ func (s *Server) handleNS(m *dns.Msg, q dns.Question) {
 }
 
 func (s *Server) handleA(m *dns.Msg, q dns.Question, records []models.DNSRecord) {
+	if len(records) == 0 {
+		m.Rcode = dns.RcodeNameError
+		return
+	}
+	name := strings.TrimSuffix(q.Name, ".")
+	name = strings.ToLower(name)
+	records = lo.Filter(records, func(record models.DNSRecord, _ int) bool {
+		return record.Name == name
+	})
 	if len(records) == 0 {
 		m.Rcode = dns.RcodeNameError
 		return
