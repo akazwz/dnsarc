@@ -12,6 +12,6 @@ const (
 )
 
 type Event struct {
-	Type   EventType `json:"type"`
-	Domain string    `json:"domain"`
+	Type     EventType `json:"type"`
+	ZoneName string    `json:"zone_name"`
 }

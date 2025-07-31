@@ -10,16 +10,16 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file zone/v1/zone.proto.
  */
 export const file_zone_v1_zone: GenFile = /*@__PURE__*/
-  fileDesc("ChJ6b25lL3YxL3pvbmUucHJvdG8SB3pvbmUudjEiIwoRQ3JlYXRlWm9uZVJlcXVlc3QSDgoGZG9tYWluGAEgASgJIl0KBFpvbmUSCgoCaWQYASABKAkSDgoGZG9tYWluGAIgASgJEhEKCWlzX2FjdGl2ZRgDIAEoCBISCgpjcmVhdGVkX2F0GAQgASgJEhIKCnVwZGF0ZWRfYXQYBSABKAkiMQoSQ3JlYXRlWm9uZVJlc3BvbnNlEhsKBHpvbmUYASABKAsyDS56b25lLnYxLlpvbmUiEgoQTGlzdFpvbmVzUmVxdWVzdCIxChFMaXN0Wm9uZXNSZXNwb25zZRIcCgV6b25lcxgBIAMoCzINLnpvbmUudjEuWm9uZSIcCg5HZXRab25lUmVxdWVzdBIKCgJpZBgBIAEoCSIuCg9HZXRab25lUmVzcG9uc2USGwoEem9uZRgBIAEoCzINLnpvbmUudjEuWm9uZSIfChFEZWxldGVab25lUmVxdWVzdBIKCgJpZBgBIAEoCSIUChJEZWxldGVab25lUmVzcG9uc2UypQIKC1pvbmVTZXJ2aWNlEkcKCkNyZWF0ZVpvbmUSGi56b25lLnYxLkNyZWF0ZVpvbmVSZXF1ZXN0Ghsuem9uZS52MS5DcmVhdGVab25lUmVzcG9uc2UiABJECglMaXN0Wm9uZXMSGS56b25lLnYxLkxpc3Rab25lc1JlcXVlc3QaGi56b25lLnYxLkxpc3Rab25lc1Jlc3BvbnNlIgASPgoHR2V0Wm9uZRIXLnpvbmUudjEuR2V0Wm9uZVJlcXVlc3QaGC56b25lLnYxLkdldFpvbmVSZXNwb25zZSIAEkcKCkRlbGV0ZVpvbmUSGi56b25lLnYxLkRlbGV0ZVpvbmVSZXF1ZXN0Ghsuem9uZS52MS5EZWxldGVab25lUmVzcG9uc2UiAEIbWhlkbnNhcmMvZ2VuL3pvbmUvdjE7em9uZXYxYgZwcm90bzM");
+  fileDesc("ChJ6b25lL3YxL3pvbmUucHJvdG8SB3pvbmUudjEiJgoRQ3JlYXRlWm9uZVJlcXVlc3QSEQoJem9uZV9uYW1lGAEgASgJImAKBFpvbmUSCgoCaWQYASABKAkSEQoJem9uZV9uYW1lGAIgASgJEhEKCWlzX2FjdGl2ZRgDIAEoCBISCgpjcmVhdGVkX2F0GAQgASgJEhIKCnVwZGF0ZWRfYXQYBSABKAkiMQoSQ3JlYXRlWm9uZVJlc3BvbnNlEhsKBHpvbmUYASABKAsyDS56b25lLnYxLlpvbmUiEgoQTGlzdFpvbmVzUmVxdWVzdCIxChFMaXN0Wm9uZXNSZXNwb25zZRIcCgV6b25lcxgBIAMoCzINLnpvbmUudjEuWm9uZSIcCg5HZXRab25lUmVxdWVzdBIKCgJpZBgBIAEoCSIuCg9HZXRab25lUmVzcG9uc2USGwoEem9uZRgBIAEoCzINLnpvbmUudjEuWm9uZSIpChRHZXRab25lQnlOYW1lUmVxdWVzdBIRCgl6b25lX25hbWUYASABKAkiNAoVR2V0Wm9uZUJ5TmFtZVJlc3BvbnNlEhsKBHpvbmUYASABKAsyDS56b25lLnYxLlpvbmUiHwoRRGVsZXRlWm9uZVJlcXVlc3QSCgoCaWQYASABKAkiFAoSRGVsZXRlWm9uZVJlc3BvbnNlMvcCCgtab25lU2VydmljZRJHCgpDcmVhdGVab25lEhouem9uZS52MS5DcmVhdGVab25lUmVxdWVzdBobLnpvbmUudjEuQ3JlYXRlWm9uZVJlc3BvbnNlIgASRAoJTGlzdFpvbmVzEhkuem9uZS52MS5MaXN0Wm9uZXNSZXF1ZXN0Ghouem9uZS52MS5MaXN0Wm9uZXNSZXNwb25zZSIAEj4KB0dldFpvbmUSFy56b25lLnYxLkdldFpvbmVSZXF1ZXN0Ghguem9uZS52MS5HZXRab25lUmVzcG9uc2UiABJQCg1HZXRab25lQnlOYW1lEh0uem9uZS52MS5HZXRab25lQnlOYW1lUmVxdWVzdBoeLnpvbmUudjEuR2V0Wm9uZUJ5TmFtZVJlc3BvbnNlIgASRwoKRGVsZXRlWm9uZRIaLnpvbmUudjEuRGVsZXRlWm9uZVJlcXVlc3QaGy56b25lLnYxLkRlbGV0ZVpvbmVSZXNwb25zZSIAQhtaGWRuc2FyYy9nZW4vem9uZS92MTt6b25ldjFiBnByb3RvMw");
 
 /**
  * @generated from message zone.v1.CreateZoneRequest
  */
 export type CreateZoneRequest = Message<"zone.v1.CreateZoneRequest"> & {
   /**
-   * @generated from field: string domain = 1;
+   * @generated from field: string zone_name = 1;
    */
-  domain: string;
+  zoneName: string;
 };
 
 /**
@@ -39,9 +39,9 @@ export type Zone = Message<"zone.v1.Zone"> & {
   id: string;
 
   /**
-   * @generated from field: string domain = 2;
+   * @generated from field: string zone_name = 2;
    */
-  domain: string;
+  zoneName: string;
 
   /**
    * @generated from field: bool is_active = 3;
@@ -148,6 +148,40 @@ export const GetZoneResponseSchema: GenMessage<GetZoneResponse> = /*@__PURE__*/
   messageDesc(file_zone_v1_zone, 6);
 
 /**
+ * @generated from message zone.v1.GetZoneByNameRequest
+ */
+export type GetZoneByNameRequest = Message<"zone.v1.GetZoneByNameRequest"> & {
+  /**
+   * @generated from field: string zone_name = 1;
+   */
+  zoneName: string;
+};
+
+/**
+ * Describes the message zone.v1.GetZoneByNameRequest.
+ * Use `create(GetZoneByNameRequestSchema)` to create a new message.
+ */
+export const GetZoneByNameRequestSchema: GenMessage<GetZoneByNameRequest> = /*@__PURE__*/
+  messageDesc(file_zone_v1_zone, 7);
+
+/**
+ * @generated from message zone.v1.GetZoneByNameResponse
+ */
+export type GetZoneByNameResponse = Message<"zone.v1.GetZoneByNameResponse"> & {
+  /**
+   * @generated from field: zone.v1.Zone zone = 1;
+   */
+  zone?: Zone;
+};
+
+/**
+ * Describes the message zone.v1.GetZoneByNameResponse.
+ * Use `create(GetZoneByNameResponseSchema)` to create a new message.
+ */
+export const GetZoneByNameResponseSchema: GenMessage<GetZoneByNameResponse> = /*@__PURE__*/
+  messageDesc(file_zone_v1_zone, 8);
+
+/**
  * @generated from message zone.v1.DeleteZoneRequest
  */
 export type DeleteZoneRequest = Message<"zone.v1.DeleteZoneRequest"> & {
@@ -162,7 +196,7 @@ export type DeleteZoneRequest = Message<"zone.v1.DeleteZoneRequest"> & {
  * Use `create(DeleteZoneRequestSchema)` to create a new message.
  */
 export const DeleteZoneRequestSchema: GenMessage<DeleteZoneRequest> = /*@__PURE__*/
-  messageDesc(file_zone_v1_zone, 7);
+  messageDesc(file_zone_v1_zone, 9);
 
 /**
  * @generated from message zone.v1.DeleteZoneResponse
@@ -175,7 +209,7 @@ export type DeleteZoneResponse = Message<"zone.v1.DeleteZoneResponse"> & {
  * Use `create(DeleteZoneResponseSchema)` to create a new message.
  */
 export const DeleteZoneResponseSchema: GenMessage<DeleteZoneResponse> = /*@__PURE__*/
-  messageDesc(file_zone_v1_zone, 8);
+  messageDesc(file_zone_v1_zone, 10);
 
 /**
  * @generated from service zone.v1.ZoneService
@@ -204,6 +238,14 @@ export const ZoneService: GenService<{
     methodKind: "unary";
     input: typeof GetZoneRequestSchema;
     output: typeof GetZoneResponseSchema;
+  },
+  /**
+   * @generated from rpc zone.v1.ZoneService.GetZoneByName
+   */
+  getZoneByName: {
+    methodKind: "unary";
+    input: typeof GetZoneByNameRequestSchema;
+    output: typeof GetZoneByNameResponseSchema;
   },
   /**
    * @generated from rpc zone.v1.ZoneService.DeleteZone

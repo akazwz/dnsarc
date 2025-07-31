@@ -8,24 +8,28 @@ service DNSRecordService {
   rpc CreateDNSRecord(CreateDNSRecordRequest) returns (CreateDNSRecordResponse) {}
   rpc ListDNSRecords(ListDNSRecordsRequest) returns (ListDNSRecordsResponse) {}
   rpc GetDNSRecord(GetDNSRecordRequest) returns (GetDNSRecordResponse) {}
+  rpc UpdateDNSRecord(UpdateDNSRecordRequest) returns (UpdateDNSRecordResponse) {}
   rpc DeleteDNSRecord(DeleteDNSRecordRequest) returns (DeleteDNSRecordResponse) {}
 }
 
 message CreateDNSRecordRequest {
-  string domain = 1;
-  string type = 2;
-  string value = 3;
-  int32 ttl = 4;
+  string zone_id = 1;
+  string name = 2;
+  string type = 3;
+  string content = 4;
+  int32 ttl = 5;
 }
 
 message DNSRecord {
   string id = 1;
-  string domain = 2;
-  string type = 3;
-  string value = 4;
-  int32 ttl = 5;
-  string created_at = 6;
-  string updated_at = 7;
+  string zone_id = 2;
+  string zone_name = 3;
+  string name = 4;
+  string type = 5;
+  string content = 6;
+  int32 ttl = 7;
+  string created_at = 8;
+  string updated_at = 9;
 }
 
 message CreateDNSRecordResponse {
@@ -33,7 +37,7 @@ message CreateDNSRecordResponse {
 }
 
 message ListDNSRecordsRequest {
-  string domain = 1;
+  string zone_id = 1;
 }
 
 message ListDNSRecordsResponse {
@@ -45,6 +49,18 @@ message GetDNSRecordRequest {
 }
 
 message GetDNSRecordResponse {
+  DNSRecord record = 1;
+}
+
+message UpdateDNSRecordRequest {
+  string id = 1;
+  string name = 2;
+  string type = 3;
+  string content = 4;
+  int32 ttl = 5;
+}
+
+message UpdateDNSRecordResponse {
   DNSRecord record = 1;
 }
 

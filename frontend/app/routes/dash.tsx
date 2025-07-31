@@ -36,7 +36,7 @@ import { Input } from "~/components/ui/input";
 import { authClient, zoneClient } from "~/connect";
 
 const schema = z.object({
-	domain: z.string().min(2).max(255),
+	zoneName: z.string().min(1).max(255),
 });
 
 export default function Dash() {
@@ -66,7 +66,7 @@ export default function Dash() {
 	const mutation = useMutation({
 		mutationFn: async (values: z.infer<typeof schema>) => {
 			const response = await zoneClient.createZone({
-				domain: values.domain,
+				zoneName: values.zoneName,
 			});
 			return response.zone;
 		},
@@ -196,10 +196,10 @@ export default function Dash() {
 										</DialogHeader>
 										<FormField
 											control={form.control}
-											name="domain"
+											name="zoneName"
 											render={({ field }) => (
 												<FormItem className="my-4">
-													<FormLabel>Domain Name</FormLabel>
+													<FormLabel>Zone Name</FormLabel>
 													<FormControl>
 														<Input
 															{...field}
@@ -269,10 +269,10 @@ export default function Dash() {
 											</DialogHeader>
 											<FormField
 												control={form.control}
-												name="domain"
+												name="zoneName"
 												render={({ field }) => (
 													<FormItem className="my-4">
-														<FormLabel>Domain Name</FormLabel>
+														<FormLabel>Zone Name</FormLabel>
 														<FormControl>
 															<Input
 																{...field}
@@ -327,7 +327,7 @@ function ZoneCard({ zone }: { zone: Zone }) {
 	});
 
 	function handleClick() {
-		navigate(`/dash/${zone.domain}`);
+		navigate(`/dash/${zone.zoneName}`);
 	}
 
 	function handleDelete(e: React.MouseEvent) {
@@ -347,7 +347,7 @@ function ZoneCard({ zone }: { zone: Zone }) {
 					</div>
 					<div className="flex-1 min-w-0">
 						<h3 className="font-semibold text-gray-900 truncate group-hover:text-blue-700 transition-colors">
-							{zone.domain}
+							{zone.zoneName}
 						</h3>
 						<p className="text-sm text-gray-500">DNS Zone</p>
 					</div>

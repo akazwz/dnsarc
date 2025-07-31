@@ -5,5 +5,5 @@ export default [
 	route("login", "routes/login.tsx"),
 	route("register", "routes/register.tsx"),
 	route("dash", "routes/dash.tsx"),
-	route("dash/:domain", "routes/zone.tsx"),
+	route("dash/:zoneName", "routes/zone.tsx"),
 ] satisfies RouteConfig;

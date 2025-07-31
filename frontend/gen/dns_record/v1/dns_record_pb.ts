@@ -10,29 +10,34 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file dns_record/v1/dns_record.proto.
  */
 export const file_dns_record_v1_dns_record: GenFile = /*@__PURE__*/
-  fileDesc("Ch5kbnNfcmVjb3JkL3YxL2Ruc19yZWNvcmQucHJvdG8SDWRuc19yZWNvcmQudjEiUgoWQ3JlYXRlRE5TUmVjb3JkUmVxdWVzdBIOCgZkb21haW4YASABKAkSDAoEdHlwZRgCIAEoCRINCgV2YWx1ZRgDIAEoCRILCgN0dGwYBCABKAUieQoJRE5TUmVjb3JkEgoKAmlkGAEgASgJEg4KBmRvbWFpbhgCIAEoCRIMCgR0eXBlGAMgASgJEg0KBXZhbHVlGAQgASgJEgsKA3R0bBgFIAEoBRISCgpjcmVhdGVkX2F0GAYgASgJEhIKCnVwZGF0ZWRfYXQYByABKAkiQwoXQ3JlYXRlRE5TUmVjb3JkUmVzcG9uc2USKAoGcmVjb3JkGAEgASgLMhguZG5zX3JlY29yZC52MS5ETlNSZWNvcmQiJwoVTGlzdEROU1JlY29yZHNSZXF1ZXN0Eg4KBmRvbWFpbhgBIAEoCSJDChZMaXN0RE5TUmVjb3Jkc1Jlc3BvbnNlEikKB3JlY29yZHMYASADKAsyGC5kbnNfcmVjb3JkLnYxLkROU1JlY29yZCIhChNHZXRETlNSZWNvcmRSZXF1ZXN0EgoKAmlkGAEgASgJIkAKFEdldEROU1JlY29yZFJlc3BvbnNlEigKBnJlY29yZBgBIAEoCzIYLmRuc19yZWNvcmQudjEuRE5TUmVjb3JkIiQKFkRlbGV0ZUROU1JlY29yZFJlcXVlc3QSCgoCaWQYASABKAkiGQoXRGVsZXRlRE5TUmVjb3JkUmVzcG9uc2UylgMKEEROU1JlY29yZFNlcnZpY2USYgoPQ3JlYXRlRE5TUmVjb3JkEiUuZG5zX3JlY29yZC52MS5DcmVhdGVETlNSZWNvcmRSZXF1ZXN0GiYuZG5zX3JlY29yZC52MS5DcmVhdGVETlNSZWNvcmRSZXNwb25zZSIAEl8KDkxpc3RETlNSZWNvcmRzEiQuZG5zX3JlY29yZC52MS5MaXN0RE5TUmVjb3Jkc1JlcXVlc3QaJS5kbnNfcmVjb3JkLnYxLkxpc3RETlNSZWNvcmRzUmVzcG9uc2UiABJZCgxHZXRETlNSZWNvcmQSIi5kbnNfcmVjb3JkLnYxLkdldEROU1JlY29yZFJlcXVlc3QaIy5kbnNfcmVjb3JkLnYxLkdldEROU1JlY29yZFJlc3BvbnNlIgASYgoPRGVsZXRlRE5TUmVjb3JkEiUuZG5zX3JlY29yZC52MS5EZWxldGVETlNSZWNvcmRSZXF1ZXN0GiYuZG5zX3JlY29yZC52MS5EZWxldGVETlNSZWNvcmRSZXNwb25zZSIAQidaJWRuc2FyYy9nZW4vZG5zX3JlY29yZC92MTtkbnNfcmVjb3JkdjFiBnByb3RvMw");
+  fileDesc("Ch5kbnNfcmVjb3JkL3YxL2Ruc19yZWNvcmQucHJvdG8SDWRuc19yZWNvcmQudjEiYwoWQ3JlYXRlRE5TUmVjb3JkUmVxdWVzdBIPCgd6b25lX2lkGAEgASgJEgwKBG5hbWUYAiABKAkSDAoEdHlwZRgDIAEoCRIPCgdjb250ZW50GAQgASgJEgsKA3R0bBgFIAEoBSKdAQoJRE5TUmVjb3JkEgoKAmlkGAEgASgJEg8KB3pvbmVfaWQYAiABKAkSEQoJem9uZV9uYW1lGAMgASgJEgwKBG5hbWUYBCABKAkSDAoEdHlwZRgFIAEoCRIPCgdjb250ZW50GAYgASgJEgsKA3R0bBgHIAEoBRISCgpjcmVhdGVkX2F0GAggASgJEhIKCnVwZGF0ZWRfYXQYCSABKAkiQwoXQ3JlYXRlRE5TUmVjb3JkUmVzcG9uc2USKAoGcmVjb3JkGAEgASgLMhguZG5zX3JlY29yZC52MS5ETlNSZWNvcmQiKAoVTGlzdEROU1JlY29yZHNSZXF1ZXN0Eg8KB3pvbmVfaWQYASABKAkiQwoWTGlzdEROU1JlY29yZHNSZXNwb25zZRIpCgdyZWNvcmRzGAEgAygLMhguZG5zX3JlY29yZC52MS5ETlNSZWNvcmQiIQoTR2V0RE5TUmVjb3JkUmVxdWVzdBIKCgJpZBgBIAEoCSJAChRHZXRETlNSZWNvcmRSZXNwb25zZRIoCgZyZWNvcmQYASABKAsyGC5kbnNfcmVjb3JkLnYxLkROU1JlY29yZCJeChZVcGRhdGVETlNSZWNvcmRSZXF1ZXN0EgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkSDAoEdHlwZRgDIAEoCRIPCgdjb250ZW50GAQgASgJEgsKA3R0bBgFIAEoBSJDChdVcGRhdGVETlNSZWNvcmRSZXNwb25zZRIoCgZyZWNvcmQYASABKAsyGC5kbnNfcmVjb3JkLnYxLkROU1JlY29yZCIkChZEZWxldGVETlNSZWNvcmRSZXF1ZXN0EgoKAmlkGAEgASgJIhkKF0RlbGV0ZUROU1JlY29yZFJlc3BvbnNlMvoDChBETlNSZWNvcmRTZXJ2aWNlEmIKD0NyZWF0ZUROU1JlY29yZBIlLmRuc19yZWNvcmQudjEuQ3JlYXRlRE5TUmVjb3JkUmVxdWVzdBomLmRuc19yZWNvcmQudjEuQ3JlYXRlRE5TUmVjb3JkUmVzcG9uc2UiABJfCg5MaXN0RE5TUmVjb3JkcxIkLmRuc19yZWNvcmQudjEuTGlzdEROU1JlY29yZHNSZXF1ZXN0GiUuZG5zX3JlY29yZC52MS5MaXN0RE5TUmVjb3Jkc1Jlc3BvbnNlIgASWQoMR2V0RE5TUmVjb3JkEiIuZG5zX3JlY29yZC52MS5HZXRETlNSZWNvcmRSZXF1ZXN0GiMuZG5zX3JlY29yZC52MS5HZXRETlNSZWNvcmRSZXNwb25zZSIAEmIKD1VwZGF0ZUROU1JlY29yZBIlLmRuc19yZWNvcmQudjEuVXBkYXRlRE5TUmVjb3JkUmVxdWVzdBomLmRuc19yZWNvcmQudjEuVXBkYXRlRE5TUmVjb3JkUmVzcG9uc2UiABJiCg9EZWxldGVETlNSZWNvcmQSJS5kbnNfcmVjb3JkLnYxLkRlbGV0ZUROU1JlY29yZFJlcXVlc3QaJi5kbnNfcmVjb3JkLnYxLkRlbGV0ZUROU1JlY29yZFJlc3BvbnNlIgBCJ1olZG5zYXJjL2dlbi9kbnNfcmVjb3JkL3YxO2Ruc19yZWNvcmR2MWIGcHJvdG8z");
 
 /**
  * @generated from message dns_record.v1.CreateDNSRecordRequest
  */
 export type CreateDNSRecordRequest = Message<"dns_record.v1.CreateDNSRecordRequest"> & {
   /**
-   * @generated from field: string domain = 1;
+   * @generated from field: string zone_id = 1;
    */
-  domain: string;
+  zoneId: string;
 
   /**
-   * @generated from field: string type = 2;
+   * @generated from field: string name = 2;
+   */
+  name: string;
+
+  /**
+   * @generated from field: string type = 3;
    */
   type: string;
 
   /**
-   * @generated from field: string value = 3;
+   * @generated from field: string content = 4;
    */
-  value: string;
+  content: string;
 
   /**
-   * @generated from field: int32 ttl = 4;
+   * @generated from field: int32 ttl = 5;
    */
   ttl: number;
 };
@@ -54,32 +59,42 @@ export type DNSRecord = Message<"dns_record.v1.DNSRecord"> & {
   id: string;
 
   /**
-   * @generated from field: string domain = 2;
+   * @generated from field: string zone_id = 2;
    */
-  domain: string;
+  zoneId: string;
 
   /**
-   * @generated from field: string type = 3;
+   * @generated from field: string zone_name = 3;
+   */
+  zoneName: string;
+
+  /**
+   * @generated from field: string name = 4;
+   */
+  name: string;
+
+  /**
+   * @generated from field: string type = 5;
    */
   type: string;
 
   /**
-   * @generated from field: string value = 4;
+   * @generated from field: string content = 6;
    */
-  value: string;
+  content: string;
 
   /**
-   * @generated from field: int32 ttl = 5;
+   * @generated from field: int32 ttl = 7;
    */
   ttl: number;
 
   /**
-   * @generated from field: string created_at = 6;
+   * @generated from field: string created_at = 8;
    */
   createdAt: string;
 
   /**
-   * @generated from field: string updated_at = 7;
+   * @generated from field: string updated_at = 9;
    */
   updatedAt: string;
 };
@@ -113,9 +128,9 @@ export const CreateDNSRecordResponseSchema: GenMessage<CreateDNSRecordResponse> 
  */
 export type ListDNSRecordsRequest = Message<"dns_record.v1.ListDNSRecordsRequest"> & {
   /**
-   * @generated from field: string domain = 1;
+   * @generated from field: string zone_id = 1;
    */
-  domain: string;
+  zoneId: string;
 };
 
 /**
@@ -177,6 +192,60 @@ export const GetDNSRecordResponseSchema: GenMessage<GetDNSRecordResponse> = /*@_
   messageDesc(file_dns_record_v1_dns_record, 6);
 
 /**
+ * @generated from message dns_record.v1.UpdateDNSRecordRequest
+ */
+export type UpdateDNSRecordRequest = Message<"dns_record.v1.UpdateDNSRecordRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string name = 2;
+   */
+  name: string;
+
+  /**
+   * @generated from field: string type = 3;
+   */
+  type: string;
+
+  /**
+   * @generated from field: string content = 4;
+   */
+  content: string;
+
+  /**
+   * @generated from field: int32 ttl = 5;
+   */
+  ttl: number;
+};
+
+/**
+ * Describes the message dns_record.v1.UpdateDNSRecordRequest.
+ * Use `create(UpdateDNSRecordRequestSchema)` to create a new message.
+ */
+export const UpdateDNSRecordRequestSchema: GenMessage<UpdateDNSRecordRequest> = /*@__PURE__*/
+  messageDesc(file_dns_record_v1_dns_record, 7);
+
+/**
+ * @generated from message dns_record.v1.UpdateDNSRecordResponse
+ */
+export type UpdateDNSRecordResponse = Message<"dns_record.v1.UpdateDNSRecordResponse"> & {
+  /**
+   * @generated from field: dns_record.v1.DNSRecord record = 1;
+   */
+  record?: DNSRecord;
+};
+
+/**
+ * Describes the message dns_record.v1.UpdateDNSRecordResponse.
+ * Use `create(UpdateDNSRecordResponseSchema)` to create a new message.
+ */
+export const UpdateDNSRecordResponseSchema: GenMessage<UpdateDNSRecordResponse> = /*@__PURE__*/
+  messageDesc(file_dns_record_v1_dns_record, 8);
+
+/**
  * @generated from message dns_record.v1.DeleteDNSRecordRequest
  */
 export type DeleteDNSRecordRequest = Message<"dns_record.v1.DeleteDNSRecordRequest"> & {
@@ -191,7 +260,7 @@ export type DeleteDNSRecordRequest = Message<"dns_record.v1.DeleteDNSRecordReque
  * Use `create(DeleteDNSRecordRequestSchema)` to create a new message.
  */
 export const DeleteDNSRecordRequestSchema: GenMessage<DeleteDNSRecordRequest> = /*@__PURE__*/
-  messageDesc(file_dns_record_v1_dns_record, 7);
+  messageDesc(file_dns_record_v1_dns_record, 9);
 
 /**
  * @generated from message dns_record.v1.DeleteDNSRecordResponse
@@ -204,7 +273,7 @@ export type DeleteDNSRecordResponse = Message<"dns_record.v1.DeleteDNSRecordResp
  * Use `create(DeleteDNSRecordResponseSchema)` to create a new message.
  */
 export const DeleteDNSRecordResponseSchema: GenMessage<DeleteDNSRecordResponse> = /*@__PURE__*/
-  messageDesc(file_dns_record_v1_dns_record, 8);
+  messageDesc(file_dns_record_v1_dns_record, 10);
 
 /**
  * @generated from service dns_record.v1.DNSRecordService
@@ -233,6 +302,14 @@ export const DNSRecordService: GenService<{
     methodKind: "unary";
     input: typeof GetDNSRecordRequestSchema;
     output: typeof GetDNSRecordResponseSchema;
+  },
+  /**
+   * @generated from rpc dns_record.v1.DNSRecordService.UpdateDNSRecord
+   */
+  updateDNSRecord: {
+    methodKind: "unary";
+    input: typeof UpdateDNSRecordRequestSchema;
+    output: typeof UpdateDNSRecordResponseSchema;
   },
   /**
    * @generated from rpc dns_record.v1.DNSRecordService.DeleteDNSRecord

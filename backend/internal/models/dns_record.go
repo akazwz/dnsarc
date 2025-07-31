@@ -1,20 +1,22 @@
 package models
 
 import (
-	dns_recordv1 "dnsarc/gen/dns_record/v1"
 	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+
+	dns_recordv1 "dnsarc/gen/dns_record/v1"
 )
 
 type DNSRecord struct {
 	ID        string    `json:"id" gorm:"primaryKey"`
-	UserID    string    `json:"user_id"`
-	ZoneID    string    `json:"zone_id"`
-	Domain    string    `json:"domain"` // without trailing dot
+	UserID    string    `json:"user_id" gorm:"index"`
+	ZoneID    string    `json:"zone_id" gorm:"index"`
+	ZoneName  string    `json:"zone_name" gorm:"index"` // 冗余字段，用于缓存
+	Name      string    `json:"name"`
 	Type      string    `json:"type"`
-	Value     string    `json:"value"`
+	Content   string    `json:"content"`
 	TTL       int       `json:"ttl"`
 	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt time.Time `json:"updated_at" gorm:"autoUpdateTime"`
@@ -34,9 +36,9 @@ func (r *DNSRecord) BeforeCreate(tx *gorm.DB) (err error) {
 func (r *DNSRecord) ToProto() *dns_recordv1.DNSRecord {
 	return &dns_recordv1.DNSRecord{
 		Id:        r.ID,
-		Domain:    r.Domain,
+		Name:      r.Name,
 		Type:      r.Type,
-		Value:     r.Value,
+		Content:   r.Content,
 		Ttl:       int32(r.TTL),
 		CreatedAt: r.CreatedAt.Format(time.RFC3339),
 		UpdatedAt: r.UpdatedAt.Format(time.RFC3339),

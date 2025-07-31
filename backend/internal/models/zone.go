@@ -9,10 +9,10 @@ import (
 )
 
 type Zone struct {
-	ID        string `gorm:"primaryKey"`
-	UserID    string `json:"user_id"`
-	Domain    string // without . at the end
-	IsActive  bool
+	ID        string    `gorm:"primaryKey"`
+	UserID    string    `json:"user_id" gorm:"index"`
+	ZoneName  string    `json:"zone_name" gorm:"index"`
+	IsActive  bool      `json:"is_active"`
 	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt time.Time `json:"updated_at" gorm:"autoUpdateTime"`
 }
@@ -29,7 +29,7 @@ func (z *Zone) BeforeCreate(tx *gorm.DB) (err error) {
 func (z *Zone) ToProto() *zonev1.Zone {
 	return &zonev1.Zone{
 		Id:        z.ID,
-		Domain:    z.Domain,
+		ZoneName:  z.ZoneName,
 		IsActive:  z.IsActive,
 		CreatedAt: z.CreatedAt.Format(time.RFC3339),
 		UpdatedAt: z.UpdatedAt.Format(time.RFC3339),

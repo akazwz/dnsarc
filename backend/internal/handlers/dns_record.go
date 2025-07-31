@@ -41,26 +41,35 @@ func (h *DNSRecordHandler) PublishEvent(event event.Event) {
 
 func (h *DNSRecordHandler) CreateDNSRecord(ctx context.Context, req *connect.Request[dns_recordv1.CreateDNSRecordRequest]) (*connect.Response[dns_recordv1.CreateDNSRecordResponse], error) {
 	userID, _ := interceptors.GetUserID(ctx)
-	domain := strings.ToLower(req.Msg.Domain)
+	name := strings.ToLower(req.Msg.Name) // 这里 name 是 @ 或者 api 这种，需要转换为 name
+	name = strings.TrimSuffix(name, ".")
 	var zone models.Zone
-	if err := h.db.Where("user_id = ? AND domain = ?", userID, domain).First(&zone).Error; err != nil {
+	if err := h.db.Where("user_id = ? AND id = ?", userID, req.Msg.ZoneId).First(&zone).Error; err != nil {
 		return nil, connect.NewError(connect.CodeNotFound, err)
 	}
+	// 拼接成完整的 name
+	if name == "@" {
+		name = zone.ZoneName
+	} else {
+		name = name + "." + zone.ZoneName
+	}
+
 	record := models.DNSRecord{
-		UserID: userID,
-		ZoneID: zone.ID,
-		Domain: domain,
-		Type:   req.Msg.Type,
-		Value:  req.Msg.Value,
-		TTL:    int(req.Msg.Ttl),
+		UserID:   userID,
+		ZoneID:   zone.ID,
+		ZoneName: zone.ZoneName,
+		Name:     name,
+		Type:     req.Msg.Type,
+		Content:  req.Msg.Content,
+		TTL:      int(req.Msg.Ttl),
 	}
 	if err := h.db.Create(&record).Error; err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	go func() {
 		h.PublishEvent(event.Event{
-			Type:   event.EventTypeDNSRecordCreate,
-			Domain: domain,
+			Type:     event.EventTypeDNSRecordCreate,
+			ZoneName: zone.ZoneName,
 		})
 	}()
 	return &connect.Response[dns_recordv1.CreateDNSRecordResponse]{
@@ -73,7 +82,7 @@ func (h *DNSRecordHandler) CreateDNSRecord(ctx context.Context, req *connect.Req
 func (h *DNSRecordHandler) ListDNSRecords(ctx context.Context, req *connect.Request[dns_recordv1.ListDNSRecordsRequest]) (*connect.Response[dns_recordv1.ListDNSRecordsResponse], error) {
 	userID, _ := interceptors.GetUserID(ctx)
 	var records []models.DNSRecord
-	if err := h.db.Where("user_id = ? AND domain = ?", userID, req.Msg.Domain).Find(&records).Error; err != nil {
+	if err := h.db.Where("user_id = ? AND zone_id = ?", userID, req.Msg.ZoneId).Find(&records).Error; err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	return &connect.Response[dns_recordv1.ListDNSRecordsResponse]{
@@ -96,6 +105,34 @@ func (h *DNSRecordHandler) GetDNSRecord(ctx context.Context, req *connect.Reques
 	}, nil
 }
 
+func (h *DNSRecordHandler) UpdateDNSRecord(ctx context.Context, req *connect.Request[dns_recordv1.UpdateDNSRecordRequest]) (*connect.Response[dns_recordv1.UpdateDNSRecordResponse], error) {
+	userID, _ := interceptors.GetUserID(ctx)
+	var record models.DNSRecord
+	if err := h.db.Where("user_id = ? AND id = ?", userID, req.Msg.Id).First(&record).Error; err != nil {
+		return nil, connect.NewError(connect.CodeNotFound, err)
+	}
+	name := strings.ToLower(req.Msg.Name)
+	name = strings.TrimSuffix(name, ".")
+	record.Name = name
+	record.Type = req.Msg.Type
+	record.Content = req.Msg.Content
+	record.TTL = int(req.Msg.Ttl)
+	if err := h.db.Save(&record).Error; err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	go func() {
+		h.PublishEvent(event.Event{
+			Type:     event.EventTypeDNSRecordUpdate,
+			ZoneName: record.ZoneName,
+		})
+	}()
+	return &connect.Response[dns_recordv1.UpdateDNSRecordResponse]{
+		Msg: &dns_recordv1.UpdateDNSRecordResponse{
+			Record: record.ToProto(),
+		},
+	}, nil
+}
+
 func (h *DNSRecordHandler) DeleteDNSRecord(ctx context.Context, req *connect.Request[dns_recordv1.DeleteDNSRecordRequest]) (*connect.Response[dns_recordv1.DeleteDNSRecordResponse], error) {
 	userID, _ := interceptors.GetUserID(ctx)
 	var record models.DNSRecord
@@ -107,8 +144,8 @@ func (h *DNSRecordHandler) DeleteDNSRecord(ctx context.Context, req *connect.Req
 	}
 	go func() {
 		h.PublishEvent(event.Event{
-			Type:   event.EventTypeDNSRecordDelete,
-			Domain: record.Domain,
+			Type:     event.EventTypeDNSRecordDelete,
+			ZoneName: record.ZoneName,
 		})
 	}()
 	return &connect.Response[dns_recordv1.DeleteDNSRecordResponse]{}, nil

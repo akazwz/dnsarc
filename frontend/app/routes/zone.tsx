@@ -32,26 +32,37 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "~/components/ui/select";
-import { dnsRecordClient } from "~/connect";
+import { dnsRecordClient, zoneClient } from "~/connect";
 import type { Route } from "./+types/zone";
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 	return {
-		domain: params.domain,
+		zoneName: params.zoneName,
 	};
 }
 
 const schema = z.object({
+	name: z.string().min(1).max(255),
 	type: z.string().min(1),
-	value: z.string().min(2).max(255),
+	content: z.string().min(2).max(255),
 	ttl: z.number().min(300).max(86400),
 });
 
 export default function Records({ loaderData }: Route.ComponentProps) {
-	const { domain } = loaderData;
+	const { zoneName } = loaderData;
 	const navigate = useNavigate();
 	const form = useForm<z.infer<typeof schema>>({
 		resolver: zodResolver(schema),
+	});
+
+	const { data: zone } = useQuery({
+		queryKey: ["zone", zoneName],
+		queryFn: async () => {
+			const response = await zoneClient.getZoneByName({
+				zoneName: zoneName,
+			});
+			return response.zone;
+		},
 	});
 
 	function onSubmit(values: z.infer<typeof schema>) {
@@ -60,10 +71,15 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 
 	const createMutation = useMutation({
 		mutationFn: async (values: z.infer<typeof schema>) => {
+			console.log("create mutation", values);
+			if (!zone) {
+				throw new Error("Zone not found");
+			}
 			const resp = await dnsRecordClient.createDNSRecord({
-				domain: domain,
+				zoneId: zone.id,
+				name: values.name,
 				type: values.type,
-				value: values.value,
+				content: values.content,
 				ttl: values.ttl,
 			});
 			return resp.record;
@@ -73,11 +89,15 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 	const { data, isLoading } = useQuery({
 		queryKey: ["dns_records"],
 		queryFn: async () => {
+			if (!zone) {
+				throw new Error("Zone not found");
+			}
 			const response = await dnsRecordClient.listDNSRecords({
-				domain: domain,
+				zoneId: zone.id,
 			});
 			return response.records;
 		},
+		enabled: !!zone,
 	});
 
 	return (
@@ -96,7 +116,7 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 								</h1>
 								<p className="text-gray-600 flex items-center">
 									<DatabaseIcon className="size-4 mr-1" />
-									Managing records for {domain}
+									Managing records for {zone?.zoneName}
 								</p>
 							</div>
 						</div>
@@ -176,7 +196,7 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 								DNS Records
 							</h2>
 							<p className="text-gray-600">
-								Manage your DNS records for {domain}
+								Manage your DNS records for {zone?.zoneName}
 							</p>
 						</div>
 						<Dialog>
@@ -195,9 +215,26 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 												Create DNS Record
 											</DialogTitle>
 											<DialogDescription>
-												Add a new DNS record for {domain}
+												Add a new DNS record for {zone?.zoneName}
 											</DialogDescription>
 										</DialogHeader>
+										<FormField
+											control={form.control}
+											name="name"
+											render={({ field }) => (
+												<FormItem className="my-4">
+													<FormLabel>Record Name</FormLabel>
+													<FormControl>
+														<Input
+															{...field}
+															placeholder="Enter record name, root name is @"
+															className="text-lg"
+														/>
+													</FormControl>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
 										<FormField
 											control={form.control}
 											name="type"
@@ -229,7 +266,7 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 										/>
 										<FormField
 											control={form.control}
-											name="value"
+											name="content"
 											render={({ field }) => (
 												<FormItem className="my-4">
 													<FormLabel>Value</FormLabel>
@@ -304,7 +341,7 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 								No DNS records found
 							</h3>
 							<p className="text-gray-500 mb-6">
-								Get started by creating your first DNS record for {domain}.
+								Get started by creating your first DNS record for {zone?.zoneName}.
 							</p>
 							<Dialog>
 								<DialogTrigger asChild>
@@ -322,7 +359,7 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 													Create your first DNS record
 												</DialogTitle>
 												<DialogDescription>
-													Add a new DNS record for {domain}
+													Add a new DNS record for {zone?.zoneName}
 												</DialogDescription>
 											</DialogHeader>
 											<FormField
@@ -358,7 +395,7 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 											/>
 											<FormField
 												control={form.control}
-												name="value"
+												name="content"
 												render={({ field }) => (
 													<FormItem className="my-4">
 														<FormLabel>Value</FormLabel>
@@ -491,6 +528,9 @@ function RecordCard({ record }: { record: DNSRecord }) {
 					<div className="text-2xl">{getTypeIcon(record.type)}</div>
 					<div className="flex-1 min-w-0">
 						<div className="flex items-center space-x-2 mb-2">
+							<span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+								{record.name}
+							</span>
 							<span
 								className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getTypeColor(record.type)}`}
 							>
@@ -501,7 +541,7 @@ function RecordCard({ record }: { record: DNSRecord }) {
 							</span>
 						</div>
 						<div className="text-sm text-gray-900 font-mono break-all">
-							{record.value}
+							{record.content}
 						</div>
 					</div>
 				</div>

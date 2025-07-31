@@ -132,7 +132,7 @@ func (s *Server) setupRoutes(r chi.Router) {
 	authInterceptor := interceptors.NewAuthInterceptor(jwtService)
 	authHandler := handlers.NewAuthHandler(s.db, jwtService)
 	r.Mount(authv1connect.NewAuthServiceHandler(authHandler, connect.WithInterceptors(authInterceptor)))
-	zoneHandler := handlers.NewZoneHandler(s.db)
+	zoneHandler := handlers.NewZoneHandler(s.db, s.rdb)
 	r.Mount(zonev1connect.NewZoneServiceHandler(zoneHandler, connect.WithInterceptors(authInterceptor)))
 	dnsRecordHandler := handlers.NewDNSRecordHandler(s.db, s.rdb)
 	r.Mount(dns_recordv1connect.NewDNSRecordServiceHandler(dnsRecordHandler, connect.WithInterceptors(authInterceptor)))

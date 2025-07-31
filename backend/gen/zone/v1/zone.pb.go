@@ -23,7 +23,7 @@ const (
 
 type CreateZoneRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Domain        string                 `protobuf:"bytes,1,opt,name=domain,proto3" json:"domain,omitempty"`
+	ZoneName      string                 `protobuf:"bytes,1,opt,name=zone_name,json=zoneName,proto3" json:"zone_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -58,9 +58,9 @@ func (*CreateZoneRequest) Descriptor() ([]byte, []int) {
 	return file_zone_v1_zone_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *CreateZoneRequest) GetDomain() string {
+func (x *CreateZoneRequest) GetZoneName() string {
 	if x != nil {
-		return x.Domain
+		return x.ZoneName
 	}
 	return ""
 }
@@ -68,7 +68,7 @@ func (x *CreateZoneRequest) GetDomain() string {
 type Zone struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Domain        string                 `protobuf:"bytes,2,opt,name=domain,proto3" json:"domain,omitempty"`
+	ZoneName      string                 `protobuf:"bytes,2,opt,name=zone_name,json=zoneName,proto3" json:"zone_name,omitempty"`
 	IsActive      bool                   `protobuf:"varint,3,opt,name=is_active,json=isActive,proto3" json:"is_active,omitempty"`
 	CreatedAt     string                 `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     string                 `protobuf:"bytes,5,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
@@ -113,9 +113,9 @@ func (x *Zone) GetId() string {
 	return ""
 }
 
-func (x *Zone) GetDomain() string {
+func (x *Zone) GetZoneName() string {
 	if x != nil {
-		return x.Domain
+		return x.ZoneName
 	}
 	return ""
 }
@@ -353,6 +353,94 @@ func (x *GetZoneResponse) GetZone() *Zone {
 	return nil
 }
 
+type GetZoneByNameRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ZoneName      string                 `protobuf:"bytes,1,opt,name=zone_name,json=zoneName,proto3" json:"zone_name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetZoneByNameRequest) Reset() {
+	*x = GetZoneByNameRequest{}
+	mi := &file_zone_v1_zone_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetZoneByNameRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetZoneByNameRequest) ProtoMessage() {}
+
+func (x *GetZoneByNameRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_zone_v1_zone_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetZoneByNameRequest.ProtoReflect.Descriptor instead.
+func (*GetZoneByNameRequest) Descriptor() ([]byte, []int) {
+	return file_zone_v1_zone_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *GetZoneByNameRequest) GetZoneName() string {
+	if x != nil {
+		return x.ZoneName
+	}
+	return ""
+}
+
+type GetZoneByNameResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Zone          *Zone                  `protobuf:"bytes,1,opt,name=zone,proto3" json:"zone,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetZoneByNameResponse) Reset() {
+	*x = GetZoneByNameResponse{}
+	mi := &file_zone_v1_zone_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetZoneByNameResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetZoneByNameResponse) ProtoMessage() {}
+
+func (x *GetZoneByNameResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_zone_v1_zone_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetZoneByNameResponse.ProtoReflect.Descriptor instead.
+func (*GetZoneByNameResponse) Descriptor() ([]byte, []int) {
+	return file_zone_v1_zone_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *GetZoneByNameResponse) GetZone() *Zone {
+	if x != nil {
+		return x.Zone
+	}
+	return nil
+}
+
 type DeleteZoneRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -362,7 +450,7 @@ type DeleteZoneRequest struct {
 
 func (x *DeleteZoneRequest) Reset() {
 	*x = DeleteZoneRequest{}
-	mi := &file_zone_v1_zone_proto_msgTypes[7]
+	mi := &file_zone_v1_zone_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -374,7 +462,7 @@ func (x *DeleteZoneRequest) String() string {
 func (*DeleteZoneRequest) ProtoMessage() {}
 
 func (x *DeleteZoneRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_zone_v1_zone_proto_msgTypes[7]
+	mi := &file_zone_v1_zone_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -387,7 +475,7 @@ func (x *DeleteZoneRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteZoneRequest.ProtoReflect.Descriptor instead.
 func (*DeleteZoneRequest) Descriptor() ([]byte, []int) {
-	return file_zone_v1_zone_proto_rawDescGZIP(), []int{7}
+	return file_zone_v1_zone_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *DeleteZoneRequest) GetId() string {
@@ -405,7 +493,7 @@ type DeleteZoneResponse struct {
 
 func (x *DeleteZoneResponse) Reset() {
 	*x = DeleteZoneResponse{}
-	mi := &file_zone_v1_zone_proto_msgTypes[8]
+	mi := &file_zone_v1_zone_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -417,7 +505,7 @@ func (x *DeleteZoneResponse) String() string {
 func (*DeleteZoneResponse) ProtoMessage() {}
 
 func (x *DeleteZoneResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_zone_v1_zone_proto_msgTypes[8]
+	mi := &file_zone_v1_zone_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -430,19 +518,19 @@ func (x *DeleteZoneResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteZoneResponse.ProtoReflect.Descriptor instead.
 func (*DeleteZoneResponse) Descriptor() ([]byte, []int) {
-	return file_zone_v1_zone_proto_rawDescGZIP(), []int{8}
+	return file_zone_v1_zone_proto_rawDescGZIP(), []int{10}
 }
 
 var File_zone_v1_zone_proto protoreflect.FileDescriptor
 
 const file_zone_v1_zone_proto_rawDesc = "" +
 	"\n" +
-	"\x12zone/v1/zone.proto\x12\azone.v1\"+\n" +
-	"\x11CreateZoneRequest\x12\x16\n" +
-	"\x06domain\x18\x01 \x01(\tR\x06domain\"\x89\x01\n" +
+	"\x12zone/v1/zone.proto\x12\azone.v1\"0\n" +
+	"\x11CreateZoneRequest\x12\x1b\n" +
+	"\tzone_name\x18\x01 \x01(\tR\bzoneName\"\x8e\x01\n" +
 	"\x04Zone\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x16\n" +
-	"\x06domain\x18\x02 \x01(\tR\x06domain\x12\x1b\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1b\n" +
+	"\tzone_name\x18\x02 \x01(\tR\bzoneName\x12\x1b\n" +
 	"\tis_active\x18\x03 \x01(\bR\bisActive\x12\x1d\n" +
 	"\n" +
 	"created_at\x18\x04 \x01(\tR\tcreatedAt\x12\x1d\n" +
@@ -456,15 +544,20 @@ const file_zone_v1_zone_proto_rawDesc = "" +
 	"\x0eGetZoneRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"4\n" +
 	"\x0fGetZoneResponse\x12!\n" +
+	"\x04zone\x18\x01 \x01(\v2\r.zone.v1.ZoneR\x04zone\"3\n" +
+	"\x14GetZoneByNameRequest\x12\x1b\n" +
+	"\tzone_name\x18\x01 \x01(\tR\bzoneName\":\n" +
+	"\x15GetZoneByNameResponse\x12!\n" +
 	"\x04zone\x18\x01 \x01(\v2\r.zone.v1.ZoneR\x04zone\"#\n" +
 	"\x11DeleteZoneRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x14\n" +
-	"\x12DeleteZoneResponse2\xa5\x02\n" +
+	"\x12DeleteZoneResponse2\xf7\x02\n" +
 	"\vZoneService\x12G\n" +
 	"\n" +
 	"CreateZone\x12\x1a.zone.v1.CreateZoneRequest\x1a\x1b.zone.v1.CreateZoneResponse\"\x00\x12D\n" +
 	"\tListZones\x12\x19.zone.v1.ListZonesRequest\x1a\x1a.zone.v1.ListZonesResponse\"\x00\x12>\n" +
-	"\aGetZone\x12\x17.zone.v1.GetZoneRequest\x1a\x18.zone.v1.GetZoneResponse\"\x00\x12G\n" +
+	"\aGetZone\x12\x17.zone.v1.GetZoneRequest\x1a\x18.zone.v1.GetZoneResponse\"\x00\x12P\n" +
+	"\rGetZoneByName\x12\x1d.zone.v1.GetZoneByNameRequest\x1a\x1e.zone.v1.GetZoneByNameResponse\"\x00\x12G\n" +
 	"\n" +
 	"DeleteZone\x12\x1a.zone.v1.DeleteZoneRequest\x1a\x1b.zone.v1.DeleteZoneResponse\"\x00B\x1bZ\x19dnsarc/gen/zone/v1;zonev1b\x06proto3"
 
@@ -480,35 +573,40 @@ func file_zone_v1_zone_proto_rawDescGZIP() []byte {
 	return file_zone_v1_zone_proto_rawDescData
 }
 
-var file_zone_v1_zone_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_zone_v1_zone_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_zone_v1_zone_proto_goTypes = []any{
-	(*CreateZoneRequest)(nil),  // 0: zone.v1.CreateZoneRequest
-	(*Zone)(nil),               // 1: zone.v1.Zone
-	(*CreateZoneResponse)(nil), // 2: zone.v1.CreateZoneResponse
-	(*ListZonesRequest)(nil),   // 3: zone.v1.ListZonesRequest
-	(*ListZonesResponse)(nil),  // 4: zone.v1.ListZonesResponse
-	(*GetZoneRequest)(nil),     // 5: zone.v1.GetZoneRequest
-	(*GetZoneResponse)(nil),    // 6: zone.v1.GetZoneResponse
-	(*DeleteZoneRequest)(nil),  // 7: zone.v1.DeleteZoneRequest
-	(*DeleteZoneResponse)(nil), // 8: zone.v1.DeleteZoneResponse
+	(*CreateZoneRequest)(nil),     // 0: zone.v1.CreateZoneRequest
+	(*Zone)(nil),                  // 1: zone.v1.Zone
+	(*CreateZoneResponse)(nil),    // 2: zone.v1.CreateZoneResponse
+	(*ListZonesRequest)(nil),      // 3: zone.v1.ListZonesRequest
+	(*ListZonesResponse)(nil),     // 4: zone.v1.ListZonesResponse
+	(*GetZoneRequest)(nil),        // 5: zone.v1.GetZoneRequest
+	(*GetZoneResponse)(nil),       // 6: zone.v1.GetZoneResponse
+	(*GetZoneByNameRequest)(nil),  // 7: zone.v1.GetZoneByNameRequest
+	(*GetZoneByNameResponse)(nil), // 8: zone.v1.GetZoneByNameResponse
+	(*DeleteZoneRequest)(nil),     // 9: zone.v1.DeleteZoneRequest
+	(*DeleteZoneResponse)(nil),    // 10: zone.v1.DeleteZoneResponse
 }
 var file_zone_v1_zone_proto_depIdxs = []int32{
-	1, // 0: zone.v1.CreateZoneResponse.zone:type_name -> zone.v1.Zone
-	1, // 1: zone.v1.ListZonesResponse.zones:type_name -> zone.v1.Zone
-	1, // 2: zone.v1.GetZoneResponse.zone:type_name -> zone.v1.Zone
-	0, // 3: zone.v1.ZoneService.CreateZone:input_type -> zone.v1.CreateZoneRequest
-	3, // 4: zone.v1.ZoneService.ListZones:input_type -> zone.v1.ListZonesRequest
-	5, // 5: zone.v1.ZoneService.GetZone:input_type -> zone.v1.GetZoneRequest
-	7, // 6: zone.v1.ZoneService.DeleteZone:input_type -> zone.v1.DeleteZoneRequest
-	2, // 7: zone.v1.ZoneService.CreateZone:output_type -> zone.v1.CreateZoneResponse
-	4, // 8: zone.v1.ZoneService.ListZones:output_type -> zone.v1.ListZonesResponse
-	6, // 9: zone.v1.ZoneService.GetZone:output_type -> zone.v1.GetZoneResponse
-	8, // 10: zone.v1.ZoneService.DeleteZone:output_type -> zone.v1.DeleteZoneResponse
-	7, // [7:11] is the sub-list for method output_type
-	3, // [3:7] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	1,  // 0: zone.v1.CreateZoneResponse.zone:type_name -> zone.v1.Zone
+	1,  // 1: zone.v1.ListZonesResponse.zones:type_name -> zone.v1.Zone
+	1,  // 2: zone.v1.GetZoneResponse.zone:type_name -> zone.v1.Zone
+	1,  // 3: zone.v1.GetZoneByNameResponse.zone:type_name -> zone.v1.Zone
+	0,  // 4: zone.v1.ZoneService.CreateZone:input_type -> zone.v1.CreateZoneRequest
+	3,  // 5: zone.v1.ZoneService.ListZones:input_type -> zone.v1.ListZonesRequest
+	5,  // 6: zone.v1.ZoneService.GetZone:input_type -> zone.v1.GetZoneRequest
+	7,  // 7: zone.v1.ZoneService.GetZoneByName:input_type -> zone.v1.GetZoneByNameRequest
+	9,  // 8: zone.v1.ZoneService.DeleteZone:input_type -> zone.v1.DeleteZoneRequest
+	2,  // 9: zone.v1.ZoneService.CreateZone:output_type -> zone.v1.CreateZoneResponse
+	4,  // 10: zone.v1.ZoneService.ListZones:output_type -> zone.v1.ListZonesResponse
+	6,  // 11: zone.v1.ZoneService.GetZone:output_type -> zone.v1.GetZoneResponse
+	8,  // 12: zone.v1.ZoneService.GetZoneByName:output_type -> zone.v1.GetZoneByNameResponse
+	10, // 13: zone.v1.ZoneService.DeleteZone:output_type -> zone.v1.DeleteZoneResponse
+	9,  // [9:14] is the sub-list for method output_type
+	4,  // [4:9] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_zone_v1_zone_proto_init() }
@@ -522,7 +620,7 @@ func file_zone_v1_zone_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_zone_v1_zone_proto_rawDesc), len(file_zone_v1_zone_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

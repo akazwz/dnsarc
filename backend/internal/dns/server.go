@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 
@@ -29,6 +30,10 @@ type Server struct {
 	config      *Config
 	cache       *DNSCache
 	bloomFilter *bloom.BloomFilter
+	bloomMu     sync.Mutex // 只保护 bloomFilter 指针赋值
+
+	pendingRebuilds int
+	rebuildTimer    *time.Timer
 }
 
 type Config struct {
@@ -61,22 +66,23 @@ func NewServer() *Server {
 		slog.Error("failed to connect to redis", "error", err)
 		os.Exit(1)
 	}
-	cache, err := NewDNSCache(db, 100000, time.Minute*30)
+	cache, err := NewDNSCache(db, 1000000, time.Minute*30)
 	if err != nil {
 		slog.Error("failed to create DNS cache", "error", err)
 		os.Exit(1)
 	}
 	bloomFilter := bloom.NewWithEstimates(1000000, 0.01)
 	go func() {
-		domains := make([]string, 0)
-		if err := db.Model(&models.Zone{}).Select("domain").Where("is_active = ?", true).Find(&domains).Error; err != nil {
-			slog.Error("failed to get domains for bloom filter", "error", err)
+		// 初始化bloom filter
+		zoneNames := make([]string, 0)
+		if err := db.Model(&models.Zone{}).Select("zone_name").Find(&zoneNames).Error; err != nil {
+			slog.Error("failed to get zone names for bloom filter", "error", err)
 			return
 		}
-		for _, domain := range domains {
-			bloomFilter.AddString(domain)
+		for _, zoneName := range zoneNames {
+			bloomFilter.AddString(zoneName)
 		}
-		slog.Info("bloom filter initialized", "domains", len(domains))
+		slog.Info("bloom filter initialized", "zone_names", len(zoneNames))
 	}()
 	return &Server{
 		db:          db,
@@ -84,7 +90,28 @@ func NewServer() *Server {
 		config:      config,
 		cache:       cache,
 		bloomFilter: bloomFilter,
+		bloomMu:     sync.Mutex{},
 	}
+}
+
+func (s *Server) rebuildBloomFilter() {
+	slog.Info("rebuilding bloom filter")
+	bloomFilter := bloom.NewWithEstimates(1000000, 0.01)
+	zoneNames := make([]string, 0)
+	if err := s.db.Model(&models.Zone{}).Select("zone_name").Find(&zoneNames).Error; err != nil {
+		slog.Error("failed to get zone names for bloom filter", "error", err)
+		return
+	}
+	for _, zoneName := range zoneNames {
+		bloomFilter.AddString(zoneName)
+	}
+
+	// 只保护指针赋值操作
+	s.bloomMu.Lock()
+	s.bloomFilter = bloomFilter
+	s.bloomMu.Unlock()
+
+	slog.Info("bloom filter rebuilt", "zone_names", len(zoneNames))
 }
 
 func (s *Server) Start() error {
@@ -106,14 +133,14 @@ func (s *Server) Start() error {
 		}()
 
 		// 获取 domain
-		domain := r.Question[0].Name
-		domain = strings.TrimSuffix(domain, ".")
-		domain = strings.ToLower(domain)
+		name := r.Question[0].Name
+		name = strings.TrimSuffix(name, ".")
+		name = strings.ToLower(name)
 
 		// 提取Zone（获取顶级域名）
-		zone, err := publicsuffix.Domain(domain)
+		zoneName, err := publicsuffix.Domain(name)
 		if err != nil {
-			slog.Error("failed to get zone", "error", err, "domain", domain)
+			slog.Error("failed to get zone", "error", err, "name", name)
 			m.Rcode = dns.RcodeNameError
 			if err := w.WriteMsg(m); err != nil {
 				slog.Error("failed to write response", "error", err)
@@ -121,8 +148,8 @@ func (s *Server) Start() error {
 		}
 
 		// 使用bloom filter检查Zone是否存在
-		if !s.bloomFilter.TestString(zone) {
-			slog.Info("zone not found in bloom filter", "zone", zone)
+		if !s.bloomFilter.TestString(zoneName) {
+			slog.Info("zone not found in bloom filter", "zone", zoneName)
 			m.Rcode = dns.RcodeNameError
 			if err := w.WriteMsg(m); err != nil {
 				slog.Error("failed to write response", "error", err)
@@ -131,11 +158,10 @@ func (s *Server) Start() error {
 		}
 		// 获取 record
 		records := make([]models.DNSRecord, 0)
-
 		recordsA := make([]models.DNSRecord, 0)
 		start := time.Now()
 		if needQuery {
-			if cachedRecords, err := s.cache.GetRecords(context.Background(), domain); err != nil {
+			if cachedRecords, err := s.cache.GetRecords(context.Background(), zoneName); err != nil {
 				slog.Error("failed to get records", "error", err)
 			} else {
 				records = cachedRecords
@@ -256,7 +282,7 @@ func (s *Server) handleA(m *dns.Msg, q dns.Question, records []models.DNSRecord)
 			Class:  dns.ClassINET,
 			Ttl:    uint32(record.TTL),
 		},
-		A: net.ParseIP(record.Value).To4(),
+		A: net.ParseIP(record.Content).To4(),
 	}
 	m.Answer = append(m.Answer, rr)
 }
@@ -265,14 +291,40 @@ func (s *Server) startSubscribeRedis() {
 	slog.Info("start subscribe redis", "event_channel", "event")
 	ctx := context.Background()
 	sub := s.rdb.Subscribe(ctx, "event")
-	defer sub.Close()
+	defer func() {
+		if err := sub.Close(); err != nil {
+			slog.Error("failed to close redis subscription", "error", err)
+		}
+	}()
 	ch := sub.Channel()
 	for msg := range ch {
-		var event event.Event
-		if err := json.Unmarshal([]byte(msg.Payload), &event); err != nil {
+		var evt event.Event
+		if err := json.Unmarshal([]byte(msg.Payload), &evt); err != nil {
 			slog.Error("failed to unmarshal event", "error", err)
 			continue
 		}
-		slog.Info("received message", "message", event)
+		switch evt.Type {
+		case event.EventTypeDNSRecordCreate, event.EventTypeDNSRecordDelete, event.EventTypeDNSRecordUpdate:
+			s.cache.InvalidateCache(evt.ZoneName)
+		case event.EventTypeZoneCreate:
+			slog.Info("zone create", "zone_name", evt.ZoneName)
+			s.bloomFilter.AddString(evt.ZoneName)
+		case event.EventTypeZoneDelete:
+			s.cache.InvalidateCache(evt.ZoneName)
+			s.pendingRebuilds++
+			count := s.pendingRebuilds
+			if count >= 10 {
+				s.rebuildBloomFilter()
+				s.pendingRebuilds = 0
+			}
+			if s.rebuildTimer != nil {
+				s.rebuildTimer.Stop()
+			}
+			s.rebuildTimer = time.AfterFunc(time.Second*10, func() {
+				s.rebuildBloomFilter()
+				s.pendingRebuilds = 0
+			})
+		}
+		slog.Info("received message", "message", evt)
 	}
 }

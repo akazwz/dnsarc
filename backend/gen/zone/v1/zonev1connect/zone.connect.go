@@ -39,6 +39,9 @@ const (
 	ZoneServiceListZonesProcedure = "/zone.v1.ZoneService/ListZones"
 	// ZoneServiceGetZoneProcedure is the fully-qualified name of the ZoneService's GetZone RPC.
 	ZoneServiceGetZoneProcedure = "/zone.v1.ZoneService/GetZone"
+	// ZoneServiceGetZoneByNameProcedure is the fully-qualified name of the ZoneService's GetZoneByName
+	// RPC.
+	ZoneServiceGetZoneByNameProcedure = "/zone.v1.ZoneService/GetZoneByName"
 	// ZoneServiceDeleteZoneProcedure is the fully-qualified name of the ZoneService's DeleteZone RPC.
 	ZoneServiceDeleteZoneProcedure = "/zone.v1.ZoneService/DeleteZone"
 )
@@ -48,6 +51,7 @@ type ZoneServiceClient interface {
 	CreateZone(context.Context, *connect.Request[v1.CreateZoneRequest]) (*connect.Response[v1.CreateZoneResponse], error)
 	ListZones(context.Context, *connect.Request[v1.ListZonesRequest]) (*connect.Response[v1.ListZonesResponse], error)
 	GetZone(context.Context, *connect.Request[v1.GetZoneRequest]) (*connect.Response[v1.GetZoneResponse], error)
+	GetZoneByName(context.Context, *connect.Request[v1.GetZoneByNameRequest]) (*connect.Response[v1.GetZoneByNameResponse], error)
 	DeleteZone(context.Context, *connect.Request[v1.DeleteZoneRequest]) (*connect.Response[v1.DeleteZoneResponse], error)
 }
 
@@ -80,6 +84,12 @@ func NewZoneServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(zoneServiceMethods.ByName("GetZone")),
 			connect.WithClientOptions(opts...),
 		),
+		getZoneByName: connect.NewClient[v1.GetZoneByNameRequest, v1.GetZoneByNameResponse](
+			httpClient,
+			baseURL+ZoneServiceGetZoneByNameProcedure,
+			connect.WithSchema(zoneServiceMethods.ByName("GetZoneByName")),
+			connect.WithClientOptions(opts...),
+		),
 		deleteZone: connect.NewClient[v1.DeleteZoneRequest, v1.DeleteZoneResponse](
 			httpClient,
 			baseURL+ZoneServiceDeleteZoneProcedure,
@@ -91,10 +101,11 @@ func NewZoneServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 
 // zoneServiceClient implements ZoneServiceClient.
 type zoneServiceClient struct {
-	createZone *connect.Client[v1.CreateZoneRequest, v1.CreateZoneResponse]
-	listZones  *connect.Client[v1.ListZonesRequest, v1.ListZonesResponse]
-	getZone    *connect.Client[v1.GetZoneRequest, v1.GetZoneResponse]
-	deleteZone *connect.Client[v1.DeleteZoneRequest, v1.DeleteZoneResponse]
+	createZone    *connect.Client[v1.CreateZoneRequest, v1.CreateZoneResponse]
+	listZones     *connect.Client[v1.ListZonesRequest, v1.ListZonesResponse]
+	getZone       *connect.Client[v1.GetZoneRequest, v1.GetZoneResponse]
+	getZoneByName *connect.Client[v1.GetZoneByNameRequest, v1.GetZoneByNameResponse]
+	deleteZone    *connect.Client[v1.DeleteZoneRequest, v1.DeleteZoneResponse]
 }
 
 // CreateZone calls zone.v1.ZoneService.CreateZone.
@@ -112,6 +123,11 @@ func (c *zoneServiceClient) GetZone(ctx context.Context, req *connect.Request[v1
 	return c.getZone.CallUnary(ctx, req)
 }
 
+// GetZoneByName calls zone.v1.ZoneService.GetZoneByName.
+func (c *zoneServiceClient) GetZoneByName(ctx context.Context, req *connect.Request[v1.GetZoneByNameRequest]) (*connect.Response[v1.GetZoneByNameResponse], error) {
+	return c.getZoneByName.CallUnary(ctx, req)
+}
+
 // DeleteZone calls zone.v1.ZoneService.DeleteZone.
 func (c *zoneServiceClient) DeleteZone(ctx context.Context, req *connect.Request[v1.DeleteZoneRequest]) (*connect.Response[v1.DeleteZoneResponse], error) {
 	return c.deleteZone.CallUnary(ctx, req)
@@ -122,6 +138,7 @@ type ZoneServiceHandler interface {
 	CreateZone(context.Context, *connect.Request[v1.CreateZoneRequest]) (*connect.Response[v1.CreateZoneResponse], error)
 	ListZones(context.Context, *connect.Request[v1.ListZonesRequest]) (*connect.Response[v1.ListZonesResponse], error)
 	GetZone(context.Context, *connect.Request[v1.GetZoneRequest]) (*connect.Response[v1.GetZoneResponse], error)
+	GetZoneByName(context.Context, *connect.Request[v1.GetZoneByNameRequest]) (*connect.Response[v1.GetZoneByNameResponse], error)
 	DeleteZone(context.Context, *connect.Request[v1.DeleteZoneRequest]) (*connect.Response[v1.DeleteZoneResponse], error)
 }
 
@@ -150,6 +167,12 @@ func NewZoneServiceHandler(svc ZoneServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(zoneServiceMethods.ByName("GetZone")),
 		connect.WithHandlerOptions(opts...),
 	)
+	zoneServiceGetZoneByNameHandler := connect.NewUnaryHandler(
+		ZoneServiceGetZoneByNameProcedure,
+		svc.GetZoneByName,
+		connect.WithSchema(zoneServiceMethods.ByName("GetZoneByName")),
+		connect.WithHandlerOptions(opts...),
+	)
 	zoneServiceDeleteZoneHandler := connect.NewUnaryHandler(
 		ZoneServiceDeleteZoneProcedure,
 		svc.DeleteZone,
@@ -164,6 +187,8 @@ func NewZoneServiceHandler(svc ZoneServiceHandler, opts ...connect.HandlerOption
 			zoneServiceListZonesHandler.ServeHTTP(w, r)
 		case ZoneServiceGetZoneProcedure:
 			zoneServiceGetZoneHandler.ServeHTTP(w, r)
+		case ZoneServiceGetZoneByNameProcedure:
+			zoneServiceGetZoneByNameHandler.ServeHTTP(w, r)
 		case ZoneServiceDeleteZoneProcedure:
 			zoneServiceDeleteZoneHandler.ServeHTTP(w, r)
 		default:
@@ -185,6 +210,10 @@ func (UnimplementedZoneServiceHandler) ListZones(context.Context, *connect.Reque
 
 func (UnimplementedZoneServiceHandler) GetZone(context.Context, *connect.Request[v1.GetZoneRequest]) (*connect.Response[v1.GetZoneResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("zone.v1.ZoneService.GetZone is not implemented"))
+}
+
+func (UnimplementedZoneServiceHandler) GetZoneByName(context.Context, *connect.Request[v1.GetZoneByNameRequest]) (*connect.Response[v1.GetZoneByNameResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("zone.v1.ZoneService.GetZoneByName is not implemented"))
 }
 
 func (UnimplementedZoneServiceHandler) DeleteZone(context.Context, *connect.Request[v1.DeleteZoneRequest]) (*connect.Response[v1.DeleteZoneResponse], error) {

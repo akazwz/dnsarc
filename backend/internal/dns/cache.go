@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
-	"dnsarc/internal/models"
-
 	"github.com/hashicorp/golang-lru/v2/expirable"
 	"golang.org/x/sync/singleflight"
 	"gorm.io/gorm"
+
+	"dnsarc/internal/models"
 )
 
 // DNSCache DNS缓存管理器
@@ -27,29 +27,29 @@ func NewDNSCache(db *gorm.DB, size int, ttl time.Duration) (*DNSCache, error) {
 	}, nil
 }
 
-// GetRecords 获取DNS记录，优先从缓存获取
-func (dc *DNSCache) GetRecords(ctx context.Context, domain string) ([]models.DNSRecord, error) {
+// GetRecords 获取DNS记录，优先从缓存获取, 缓存整个zone的记录
+func (dc *DNSCache) GetRecords(ctx context.Context, zoneName string) ([]models.DNSRecord, error) {
 	// 先从缓存获取
-	if records, found := dc.cache.Get(domain); found {
+	if records, found := dc.cache.Get(zoneName); found {
 		return records, nil
 	}
 
 	// 缓存未命中，使用singleflight防止缓存击穿
-	result, err, _ := dc.group.Do(domain, func() (any, error) {
+	result, err, _ := dc.group.Do(zoneName, func() (any, error) {
 		// 再次检查缓存（双重检查锁定模式）
-		if records, found := dc.cache.Get(domain); found {
+		if records, found := dc.cache.Get(zoneName); found {
 			return records, nil
 		}
 
-		// 从数据库查询
+		// 从数据库查询整个zone的记录
 		var records []models.DNSRecord
-		if err := dc.db.Where("domain = ?", domain).Find(&records).Error; err != nil {
+		if err := dc.db.Where("zone_name = ?", zoneName).Find(&records).Error; err != nil {
 			return nil, err
 		}
 
 		// 只有当有记录时才存入缓存
 		if len(records) > 0 {
-			dc.cache.Add(domain, records)
+			dc.cache.Add(zoneName, records)
 		}
 		return records, nil
 	})
@@ -61,6 +61,6 @@ func (dc *DNSCache) GetRecords(ctx context.Context, domain string) ([]models.DNS
 	return result.([]models.DNSRecord), nil
 }
 
-func (dc *DNSCache) InvalidateCache(domain string) {
-	dc.cache.Remove(domain)
+func (dc *DNSCache) InvalidateCache(zoneName string) {
+	dc.cache.Remove(zoneName)
 }
