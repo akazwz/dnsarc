@@ -10,6 +10,7 @@ import (
 	"gorm.io/gorm"
 
 	authv1 "dnsarc/gen/auth/v1"
+	"dnsarc/internal/interceptors"
 	"dnsarc/internal/models"
 	"dnsarc/internal/services"
 )
@@ -71,7 +72,6 @@ func (h *AuthHandler) Login(ctx context.Context, req *connect.Request[authv1.Log
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-
 	return connect.NewResponse(&authv1.LoginResponse{
 		AccessToken: token,
 		User: &authv1.User{
@@ -85,5 +85,18 @@ func (h *AuthHandler) Login(ctx context.Context, req *connect.Request[authv1.Log
 }
 
 func (h *AuthHandler) WhoAmI(ctx context.Context, req *connect.Request[authv1.WhoAmIRequest]) (*connect.Response[authv1.WhoAmIResponse], error) {
-	return nil, nil
+	userID, _ := interceptors.GetUserID(ctx)
+	var user models.User
+	if err := h.db.Where("id = ?", userID).First(&user).Error; err != nil {
+		return nil, connect.NewError(connect.CodeNotFound, errors.New("user not found"))
+	}
+	return connect.NewResponse(&authv1.WhoAmIResponse{
+		User: &authv1.User{
+			Id:        user.ID,
+			Email:     user.Email,
+			Avatar:    user.Avatar,
+			CreatedAt: user.CreatedAt.Format(time.RFC3339),
+			UpdatedAt: user.UpdatedAt.Format(time.RFC3339),
+		},
+	}), nil
 }

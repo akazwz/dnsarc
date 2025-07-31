@@ -1,0 +1,15 @@
+# Service for the dnsarc-frontend
+apiVersion: v1
+kind: Service
+metadata:
+  name: dnsarc-frontend-svc
+  labels:
+    app: dnsarc-frontend
+spec:
+  selector:
+    app: dnsarc-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP 

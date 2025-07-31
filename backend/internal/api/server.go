@@ -12,11 +12,14 @@ import (
 	"connectrpc.com/connect"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	"github.com/redis/go-redis/v9"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"gorm.io/gorm"
 
 	"dnsarc/gen/auth/v1/authv1connect"
+	"dnsarc/gen/dns_record/v1/dns_recordv1connect"
+	"dnsarc/gen/zone/v1/zonev1connect"
 	"dnsarc/internal/database"
 	"dnsarc/internal/handlers"
 	"dnsarc/internal/interceptors"
@@ -25,21 +28,25 @@ import (
 
 type Server struct {
 	db     *gorm.DB
+	rdb    *redis.Client
 	config *Config
 }
 
 type Config struct {
 	DatabaseURL string
+	RedisURL    string
 	JwtSecret   string
 	Port        string
+	DNSCacheURL string
 }
 
 func NewServer() *Server {
-	// 从环境变量或配置加载
 	config := &Config{
 		DatabaseURL: os.Getenv("DATABASE_URL"),
+		RedisURL:    os.Getenv("REDIS_URL"),
 		JwtSecret:   os.Getenv("JWT_SECRET"),
 		Port:        "8080",
+		DNSCacheURL: os.Getenv("DNS_CACHE_URL"), // 从环境变量读取
 	}
 
 	db, err := database.NewDatabase(config.DatabaseURL)
@@ -48,8 +55,15 @@ func NewServer() *Server {
 		os.Exit(1)
 	}
 
+	rdb, err := database.NewRedis(config.RedisURL)
+	if err != nil {
+		slog.Error("failed to connect to redis", "error", err)
+		os.Exit(1)
+	}
+
 	return &Server{
 		db:     db,
+		rdb:    rdb,
 		config: config,
 	}
 }
@@ -118,4 +132,8 @@ func (s *Server) setupRoutes(r chi.Router) {
 	authInterceptor := interceptors.NewAuthInterceptor(jwtService)
 	authHandler := handlers.NewAuthHandler(s.db, jwtService)
 	r.Mount(authv1connect.NewAuthServiceHandler(authHandler, connect.WithInterceptors(authInterceptor)))
+	zoneHandler := handlers.NewZoneHandler(s.db)
+	r.Mount(zonev1connect.NewZoneServiceHandler(zoneHandler, connect.WithInterceptors(authInterceptor)))
+	dnsRecordHandler := handlers.NewDNSRecordHandler(s.db, s.rdb)
+	r.Mount(dns_recordv1connect.NewDNSRecordServiceHandler(dnsRecordHandler, connect.WithInterceptors(authInterceptor)))
 }

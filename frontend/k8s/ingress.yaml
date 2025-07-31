@@ -1,0 +1,26 @@
+# Ingress for the dnsarc-frontend
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dnsarc-frontend-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+    traefik.ingress.kubernetes.io/redirect-permanent: "true"
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - dnsarc.com
+      secretName: dnsarc-com-tls
+  rules:
+    - host: dnsarc.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: dnsarc-frontend-svc
+                port:
+                  number: 80 

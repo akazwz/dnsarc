@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package dns_record.v1;
+
+option go_package = "dnsarc/gen/dns_record/v1;dns_recordv1";
+
+service DNSRecordService {
+  rpc CreateDNSRecord(CreateDNSRecordRequest) returns (CreateDNSRecordResponse) {}
+  rpc ListDNSRecords(ListDNSRecordsRequest) returns (ListDNSRecordsResponse) {}
+  rpc GetDNSRecord(GetDNSRecordRequest) returns (GetDNSRecordResponse) {}
+  rpc DeleteDNSRecord(DeleteDNSRecordRequest) returns (DeleteDNSRecordResponse) {}
+}
+
+message CreateDNSRecordRequest {
+  string domain = 1;
+  string type = 2;
+  string value = 3;
+  int32 ttl = 4;
+}
+
+message DNSRecord {
+  string id = 1;
+  string domain = 2;
+  string type = 3;
+  string value = 4;
+  int32 ttl = 5;
+  string created_at = 6;
+  string updated_at = 7;
+}
+
+message CreateDNSRecordResponse {
+  DNSRecord record = 1;
+}
+
+message ListDNSRecordsRequest {
+  string domain = 1;
+}
+
+message ListDNSRecordsResponse {
+  repeated DNSRecord records = 1;
+}
+
+message GetDNSRecordRequest {
+  string id = 1;
+}
+
+message GetDNSRecordResponse {
+  DNSRecord record = 1;
+}
+
+message DeleteDNSRecordRequest {
+  string id = 1;
+}
+
+message DeleteDNSRecordResponse {}

@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package zone.v1;
+
+option go_package = "dnsarc/gen/zone/v1;zonev1";
+
+service ZoneService {
+  rpc CreateZone(CreateZoneRequest) returns (CreateZoneResponse) {}
+  rpc ListZones(ListZonesRequest) returns (ListZonesResponse) {}
+  rpc GetZone(GetZoneRequest) returns (GetZoneResponse) {}
+  rpc DeleteZone(DeleteZoneRequest) returns (DeleteZoneResponse) {}
+}
+
+message CreateZoneRequest {
+  string domain = 1;
+}
+
+message Zone {
+  string id = 1;
+  string domain = 2;
+  bool is_active = 3;
+  string created_at = 4;
+  string updated_at = 5;
+}
+
+message CreateZoneResponse {
+  Zone zone = 1;
+}
+
+message ListZonesRequest {}
+
+message ListZonesResponse {
+  repeated Zone zones = 1;
+}
+
+message GetZoneRequest {
+  string id = 1;
+}
+
+message GetZoneResponse {
+  Zone zone = 1;
+}
+
+message DeleteZoneRequest {
+  string id = 1;
+}
+
+message DeleteZoneResponse {}

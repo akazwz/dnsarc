@@ -27,12 +27,20 @@ spec:
               hostPort: 53
               protocol: TCP
               name: dns-tcp
+            - containerPort: 9090
+              protocol: TCP
+              name: connect-rpc
           env:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
                   name: dnsarc-config
                   key: DATABASE_URL
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: dnsarc-config
+                  key: REDIS_URL
             - name: NS1
               valueFrom:
                 secretKeyRef:

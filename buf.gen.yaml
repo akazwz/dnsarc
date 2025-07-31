@@ -2,9 +2,13 @@ version: v2
 clean: true
 plugins:
   - local: protoc-gen-go
-    out: gen
+    out: backend/gen
     opt: paths=source_relative
   - local: protoc-gen-connect-go
-    out: gen
+    out: backend/gen
     opt: paths=source_relative
+  - local: protoc-gen-es
+    out: frontend/gen
+    include_imports: true
+    opt: target=ts
     
