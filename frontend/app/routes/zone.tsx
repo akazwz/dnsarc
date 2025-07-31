@@ -135,7 +135,7 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 				</div>
 
 				{/* Stats Section */}
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+				<div className="grid grid-cols-1 md:grid-cols-1 gap-6 mb-8">
 					<div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
 						<div className="flex items-center justify-between">
 							<div>
@@ -148,40 +148,6 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 							</div>
 							<div className="bg-blue-100 p-3 rounded-lg">
 								<DatabaseIcon className="size-6 text-blue-600" />
-							</div>
-						</div>
-					</div>
-
-					<div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-						<div className="flex items-center justify-between">
-							<div>
-								<p className="text-sm font-medium text-gray-600">A Records</p>
-								<p className="text-3xl font-bold text-green-600">
-									{isLoading
-										? "..."
-										: data?.filter((r) => r.type === "A").length || 0}
-								</p>
-							</div>
-							<div className="bg-green-100 p-3 rounded-lg">
-								<div className="size-6 bg-green-500 rounded"></div>
-							</div>
-						</div>
-					</div>
-
-					<div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-						<div className="flex items-center justify-between">
-							<div>
-								<p className="text-sm font-medium text-gray-600">
-									CNAME Records
-								</p>
-								<p className="text-3xl font-bold text-purple-600">
-									{isLoading
-										? "..."
-										: data?.filter((r) => r.type === "CNAME").length || 0}
-								</p>
-							</div>
-							<div className="bg-purple-100 p-3 rounded-lg">
-								<div className="size-6 bg-purple-500 rounded"></div>
 							</div>
 						</div>
 					</div>
@@ -341,7 +307,8 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 								No DNS records found
 							</h3>
 							<p className="text-gray-500 mb-6">
-								Get started by creating your first DNS record for {zone?.zoneName}.
+								Get started by creating your first DNS record for{" "}
+								{zone?.zoneName}.
 							</p>
 							<Dialog>
 								<DialogTrigger asChild>

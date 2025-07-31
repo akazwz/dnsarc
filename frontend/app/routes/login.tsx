@@ -61,7 +61,7 @@ export default function Login() {
 				richColors: true,
 				position: "top-center",
 			});
-			navigate("/");
+			navigate("/dash");
 		},
 		onError(error, _variables, _context) {
 			console.error(error);

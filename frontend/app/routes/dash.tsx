@@ -4,8 +4,8 @@ import type { Zone } from "gen/zone/v1/zone_pb";
 import {
 	GlobeIcon,
 	Loader2Icon,
+	LogOutIcon,
 	PlusIcon,
-	SettingsIcon,
 	Trash2Icon,
 	UserIcon,
 } from "lucide-react";
@@ -39,7 +39,10 @@ const schema = z.object({
 	zoneName: z.string().min(1).max(255),
 });
 
+import { useAuthStore } from "~/stores/auth";
+
 export default function Dash() {
+	const navigate = useNavigate();
 	const { data: user, isLoading: userLoading } = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
@@ -57,6 +60,11 @@ export default function Dash() {
 			return response.zones;
 		},
 	});
+
+	const logout = () => {
+		useAuthStore.getState().signOut();
+		navigate("/login");
+	};
 	const form = useForm<z.infer<typeof schema>>({
 		resolver: zodResolver(schema),
 	});
@@ -106,16 +114,17 @@ export default function Dash() {
 								variant="outline"
 								size="sm"
 								className="flex items-center space-x-2"
+								onClick={logout}
 							>
-								<SettingsIcon className="size-4" />
-								<span>Settings</span>
+								<LogOutIcon className="size-4" />
+								<span>Logout</span>
 							</Button>
 						</div>
 					</div>
 				</div>
 
 				{/* Stats Section */}
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+				<div className="grid grid-cols-1 md:grid-cols-1 gap-6 mb-8">
 					<div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
 						<div className="flex items-center justify-between">
 							<div>
@@ -129,36 +138,40 @@ export default function Dash() {
 							</div>
 						</div>
 					</div>
+				</div>
 
-					<div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-						<div className="flex items-center justify-between">
-							<div>
-								<p className="text-sm font-medium text-gray-600">
-									Active Zones
-								</p>
-								<p className="text-3xl font-bold text-green-600">
-									{zonesLoading ? "..." : zones?.length || 0}
-								</p>
-							</div>
-							<div className="bg-green-100 p-3 rounded-lg">
-								<div className="size-6 bg-green-500 rounded-full"></div>
-							</div>
+				{/* Nameserver Information */}
+				<div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 mb-8">
+					<div className="flex items-start space-x-4">
+						<div className="bg-blue-100 p-3 rounded-lg">
+							<GlobeIcon className="size-6 text-blue-600" />
 						</div>
-					</div>
-
-					<div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-						<div className="flex items-center justify-between">
-							<div>
-								<p className="text-sm font-medium text-gray-600">
-									Total Records
-								</p>
-								<p className="text-3xl font-bold text-purple-600">
-									{zonesLoading ? "..." : "0"}
-								</p>
+						<div className="flex-1">
+							<h3 className="text-lg font-semibold text-gray-900 mb-2">
+								Important: Update Your Nameserver Settings
+							</h3>
+							<p className="text-gray-600 mb-4">
+								To use DNSARC to manage your domains, please update your nameservers at your domain registrar to:
+							</p>
+							<div className="bg-white rounded-lg p-4 border border-blue-200">
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+									<div className="flex items-center space-x-2">
+										<span className="text-sm font-medium text-gray-500">Primary:</span>
+										<code className="bg-gray-100 px-3 py-1 rounded text-sm font-mono text-gray-800">
+											ns1.dnsarc.com
+										</code>
+									</div>
+									<div className="flex items-center space-x-2">
+										<span className="text-sm font-medium text-gray-500">Secondary:</span>
+										<code className="bg-gray-100 px-3 py-1 rounded text-sm font-mono text-gray-800">
+											ns2.dnsarc.com
+										</code>
+									</div>
+								</div>
 							</div>
-							<div className="bg-purple-100 p-3 rounded-lg">
-								<div className="size-6 bg-purple-500 rounded"></div>
-							</div>
+							<p className="text-sm text-gray-500 mt-3">
+								💡 Note: DNS changes typically take 24-48 hours to fully propagate.
+							</p>
 						</div>
 					</div>
 				</div>

@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router";
+import { Link, redirect, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "~/components/ui/button";
@@ -22,7 +22,16 @@ const schema = z.object({
 	password: z.string().min(6),
 });
 
+export async function clientLoader() {
+	const accessToken = useAuthStore.getState().accessToken;
+	if (accessToken) {
+		return redirect("/dash");
+	}
+	return null;
+}
+
 export default function Login() {
+	const navigate = useNavigate();
 	const form = useForm<z.infer<typeof schema>>({
 		resolver: zodResolver(schema),
 		defaultValues: {
@@ -47,6 +56,11 @@ export default function Login() {
 		},
 		onSuccess(data, _variables, _context) {
 			useAuthStore.getState().signIn(data.user, data.accessToken);
+			toast.success("Registered successfully", {
+				richColors: true,
+				position: "top-center",
+			});
+			navigate("/dash");
 		},
 		onError(error, _variables, _context) {
 			console.error(error);
