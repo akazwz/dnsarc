@@ -26,8 +26,7 @@ deploy-frontend:
 	kubectl apply -f frontend/k8s/
 
 update:
-	kubectl rollout restart daemonset dnsarc-dns-daemonset
-	kubectl rollout restart deployment dnsarc-api
+	kubectl rollout restart deployment dnsarc-api dnsarc-dns-deployment
 
 update-frontend:
 	kubectl rollout restart deployment dnsarc-frontend

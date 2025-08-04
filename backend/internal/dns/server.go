@@ -318,9 +318,9 @@ func (s *Server) handleCAA(m *dns.Msg, q dns.Question) {
 				Class:  dns.ClassINET, // 类别：Internet
 				Ttl:    3600,          // TTL：1小时
 			},
-			Flag:  0,                                                    // 标志位：0表示非关键
-			Tag:   "iodef",                                              // 标签：iodef表示事件报告
-			Value: "mailto:security@" + strings.TrimSuffix(q.Name, "."), // 违规报告邮箱
+			Flag:  0,                                                                     // 标志位：0表示非关键
+			Tag:   "iodef",                                                               // 标签：iodef表示事件报告
+			Value: "mailto:security@" + strings.TrimSuffix(strings.ToLower(q.Name), "."), // 违规报告邮箱
 		},
 	}
 
