@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { DNSRecord } from "gen/dns_record/v1/dns_record_pb";
-import { DatabaseIcon, GlobeIcon, Loader2Icon, PlusIcon } from "lucide-react";
+import { DatabaseIcon, EditIcon, GlobeIcon, Loader2Icon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { z } from "zod";
@@ -101,73 +101,87 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 	});
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+		<div className="min-h-screen bg-background">
+			{/* Header */}
+			<header className="backdrop-blur-sm bg-background/80 border-b border-border sticky top-0 z-50">
+				<div className="max-w-6xl mx-auto px-6 py-4">
+					<div className="flex items-center justify-between">
+						<div className="flex items-center space-x-3 group">
+							<div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-200">
+								<span className="text-primary-foreground font-bold text-sm">D</span>
+							</div>
+							<span className="text-xl font-semibold text-foreground tracking-tight">
+								DNSARC
+							</span>
+						</div>
+						<Button
+							variant="ghost"
+							size="sm"
+							className="flex items-center space-x-2"
+							onClick={() => navigate("/dash")}
+						>
+							<GlobeIcon className="size-4" />
+							<span>Back to Zones</span>
+						</Button>
+					</div>
+				</div>
+			</header>
+
 			<div className="max-w-6xl mx-auto p-6">
-				{/* Header Section */}
-				<div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+				{/* Zone Section */}
+				<div className="bg-card rounded-xl shadow-lg p-6 mb-8 border border-border">
 					<div className="flex items-center justify-between">
 						<div className="flex items-center space-x-4">
-							<div className="bg-blue-100 p-3 rounded-lg">
-								<GlobeIcon className="size-8 text-blue-600" />
+							<div className="bg-muted p-3 rounded-xl">
+								<GlobeIcon className="size-8 text-muted-foreground" />
 							</div>
 							<div>
-								<h1 className="text-2xl font-bold text-gray-900">
+								<h1 className="text-2xl font-bold text-foreground">
 									DNS Records
 								</h1>
-								<p className="text-gray-600 flex items-center">
+								<p className="text-muted-foreground flex items-center">
 									<DatabaseIcon className="size-4 mr-1" />
 									Managing records for {zone?.zoneName}
 								</p>
 							</div>
-						</div>
-						<div className="flex items-center space-x-2">
-							<Button
-								variant="outline"
-								size="sm"
-								className="flex items-center space-x-2"
-								onClick={() => navigate("/dash")}
-							>
-								<GlobeIcon className="size-4" />
-								<span>Back to Zones</span>
-							</Button>
 						</div>
 					</div>
 				</div>
 
 				{/* Stats Section */}
 				<div className="grid grid-cols-1 md:grid-cols-1 gap-6 mb-8">
-					<div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+					<div className="bg-card rounded-xl shadow-lg p-6 border border-border">
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="text-sm font-medium text-gray-600">
+								<p className="text-sm font-medium text-muted-foreground">
 									Total Records
 								</p>
-								<p className="text-3xl font-bold text-gray-900">
+								<p className="text-3xl font-bold text-foreground">
 									{isLoading ? "..." : data?.length || 0}
 								</p>
 							</div>
-							<div className="bg-blue-100 p-3 rounded-lg">
-								<DatabaseIcon className="size-6 text-blue-600" />
+							<div className="bg-muted p-3 rounded-xl">
+								<DatabaseIcon className="size-6 text-muted-foreground" />
 							</div>
 						</div>
 					</div>
 				</div>
 
 				{/* Records Section */}
-				<div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+				<div className="bg-card rounded-xl shadow-lg p-6 border border-border">
 					<div className="flex items-center justify-between mb-6">
 						<div>
-							<h2 className="text-xl font-semibold text-gray-900 flex items-center">
-								<DatabaseIcon className="size-5 mr-2 text-blue-600" />
+							<h2 className="text-xl font-semibold text-foreground flex items-center">
+								<DatabaseIcon className="size-5 mr-2 text-muted-foreground" />
 								DNS Records
 							</h2>
-							<p className="text-gray-600">
+							<p className="text-muted-foreground">
 								Manage your DNS records for {zone?.zoneName}
 							</p>
 						</div>
 						<Dialog>
 							<DialogTrigger asChild>
-								<Button className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+								<Button className="flex items-center space-x-2 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5">
 									<PlusIcon className="size-4" />
 									<span>Create Record</span>
 								</Button>
@@ -177,7 +191,7 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 									<form onSubmit={form.handleSubmit(onSubmit)}>
 										<DialogHeader>
 											<DialogTitle className="flex items-center">
-												<DatabaseIcon className="size-5 mr-2 text-blue-600" />
+												<DatabaseIcon className="size-5 mr-2 text-muted-foreground" />
 												Create DNS Record
 											</DialogTitle>
 											<DialogDescription>
@@ -279,7 +293,7 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 											<Button
 												type="submit"
 												disabled={createMutation.isPending}
-												className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+												className="shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
 											>
 												{createMutation.isPending
 													? "Creating..."
@@ -295,24 +309,24 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 					{/* Records List */}
 					{isLoading ? (
 						<div className="flex items-center justify-center py-12">
-							<Loader2Icon className="size-6 animate-spin text-blue-600" />
-							<span className="ml-3 text-gray-600">Loading records...</span>
+							<Loader2Icon className="size-6 animate-spin text-muted-foreground" />
+							<span className="ml-3 text-muted-foreground">Loading records...</span>
 						</div>
 					) : data?.length === 0 ? (
 						<div className="text-center py-12">
-							<div className="bg-gray-100 rounded-full size-20 flex items-center justify-center mx-auto mb-4">
-								<DatabaseIcon className="size-10 text-gray-400" />
+							<div className="bg-muted rounded-full size-20 flex items-center justify-center mx-auto mb-4">
+								<DatabaseIcon className="size-10 text-muted-foreground" />
 							</div>
-							<h3 className="text-lg font-medium text-gray-900 mb-2">
+							<h3 className="text-lg font-medium text-foreground mb-2">
 								No DNS records found
 							</h3>
-							<p className="text-gray-500 mb-6">
+							<p className="text-muted-foreground mb-6">
 								Get started by creating your first DNS record for{" "}
 								{zone?.zoneName}.
 							</p>
 							<Dialog>
 								<DialogTrigger asChild>
-									<Button className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+									<Button className="flex items-center space-x-2 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5">
 										<PlusIcon className="size-4" />
 										<span>Create Your First Record</span>
 									</Button>
@@ -322,7 +336,7 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 										<form onSubmit={form.handleSubmit(onSubmit)}>
 											<DialogHeader>
 												<DialogTitle className="flex items-center">
-													<DatabaseIcon className="size-5 mr-2 text-blue-600" />
+													<DatabaseIcon className="size-5 mr-2 text-muted-foreground" />
 													Create your first DNS record
 												</DialogTitle>
 												<DialogDescription>
@@ -409,7 +423,7 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 												<Button
 													type="submit"
 													disabled={createMutation.isPending}
-													className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+													className="shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
 												>
 													{createMutation.isPending
 														? "Creating..."
@@ -489,13 +503,13 @@ function RecordCard({ record }: { record: DNSRecord }) {
 	};
 
 	return (
-		<div className="group relative bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 p-4 hover:border-blue-300 hover:bg-blue-50/50">
+		<div className="group relative bg-card rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-4 border border-border">
 			<div className="flex items-start justify-between">
 				<div className="flex items-center space-x-3 flex-1">
 					<div className="text-2xl">{getTypeIcon(record.type)}</div>
 					<div className="flex-1 min-w-0">
 						<div className="flex items-center space-x-2 mb-2">
-							<span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+							<span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
 								{record.name}
 							</span>
 							<span
@@ -503,11 +517,11 @@ function RecordCard({ record }: { record: DNSRecord }) {
 							>
 								{record.type}
 							</span>
-							<span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+							<span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
 								TTL: {record.ttl}s
 							</span>
 						</div>
-						<div className="text-sm text-gray-900 font-mono break-all">
+						<div className="text-sm text-foreground font-mono break-all">
 							{record.content}
 						</div>
 					</div>
@@ -516,50 +530,23 @@ function RecordCard({ record }: { record: DNSRecord }) {
 					<Button
 						variant="outline"
 						size="sm"
-						className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+						className="size-8 p-0"
 						title="Edit"
 					>
-						<svg
-							className="h-4 w-4"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-							/>
-						</svg>
+						<EditIcon className="size-4" />
 					</Button>
 					<Button
 						variant="outline"
 						size="sm"
-						className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700 hover:bg-red-50"
+						className="size-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
 						title="Delete"
 						onClick={() => deleteMutation.mutate(record.id)}
 						disabled={deleteMutation.isPending}
 					>
-						<svg
-							className="h-4 w-4"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-							/>
-						</svg>
+						<Trash2Icon className="size-4" />
 					</Button>
 				</div>
 			</div>
-
-			{/* Hover indicator */}
-			<div className="absolute inset-0 border-2 border-blue-500 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
 		</div>
 	);
 }

@@ -1,5 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, redirect, useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -30,7 +32,9 @@ export async function clientLoader() {
 	return null;
 }
 
-export default function Login() {
+export default function Register() {
+	const [showPassword, setShowPassword] = useState(false);
+	
 	const navigate = useNavigate();
 	const form = useForm<z.infer<typeof schema>>({
 		resolver: zodResolver(schema),
@@ -76,18 +80,62 @@ export default function Login() {
 	}
 
 	return (
-		<div className="p-2 flex flex-col h-dvh justify-center">
-			<Form {...form}>
-				<form
-					onSubmit={form.handleSubmit(onSubmit)}
-					className="max-w-sm mx-auto w-full space-y-4"
-				>
-					<div className="flex flex-col gap-2 justify-center items-center mb-4">
-						<h1 className="text-xl font-bold">Create an account</h1>
-						<span className="text-sm text-muted-foreground">
-							Enter your email and password to register
-						</span>
+		<div className="min-h-screen bg-background">
+			{/* Header */}
+			<header className="backdrop-blur-sm bg-background/80 border-b border-border sticky top-0 z-50">
+				<div className="max-w-6xl mx-auto px-6 py-4">
+					<div className="flex items-center justify-between">
+						<div className="flex items-center space-x-3 group">
+							<div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-200">
+								<span className="text-primary-foreground font-bold text-sm">D</span>
+							</div>
+							<span className="text-xl font-semibold text-foreground tracking-tight">
+								DNSARC
+							</span>
+						</div>
+						<div className="flex items-center space-x-4">
+							<Button variant="ghost" asChild>
+								<Link to="/login">
+									Sign In
+								</Link>
+							</Button>
+							<Button variant="outline" asChild>
+								<Link to="/">
+									Home
+								</Link>
+							</Button>
+						</div>
 					</div>
+				</div>
+			</header>
+
+			{/* Main Content */}
+			<main className="relative flex items-center justify-center min-h-[calc(100vh-80px)] p-6 overflow-hidden">
+				{/* Background decoration */}
+				<div className="absolute inset-0 -z-10">
+					<div className="absolute top-1/4 right-1/4 w-72 h-72 bg-green-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse"></div>
+					<div className="absolute bottom-1/4 left-1/4 w-72 h-72 bg-blue-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse" style={{animationDelay: "2s"}}></div>
+				</div>
+				
+				<div className="w-full max-w-md relative">
+					{/* Status badge */}
+					<div className="text-center mb-8">
+						<div className="inline-flex items-center px-3 py-1 bg-muted/50 backdrop-blur-sm rounded-full text-xs font-medium text-muted-foreground mb-4">
+							<span className="w-1.5 h-1.5 bg-orange-500 rounded-full mr-2 animate-pulse"></span>
+							Private Beta
+						</div>
+					</div>
+					
+					<div className="bg-card/80 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-border/50">
+						<div className="text-center mb-8">
+							<h1 className="text-2xl font-bold text-foreground mb-2">Create your account</h1>
+							<p className="text-muted-foreground">
+								Enter your email and password to get started with DNSARC
+							</p>
+						</div>
+						
+						<Form {...form}>
+							<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 					<FormField
 						control={form.control}
 						name="email"
@@ -108,7 +156,22 @@ export default function Login() {
 							<FormItem>
 								<FormLabel>Password</FormLabel>
 								<FormControl>
-									<Input {...field} />
+									<div className="relative">
+										<Input {...field} type={showPassword ? "text" : "password"} />
+										<Button
+											type="button"
+											variant="ghost"
+											size="sm"
+											className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+											onClick={() => setShowPassword((prev) => !prev)}
+										>
+											{showPassword ? (
+												<EyeOffIcon className="size-4 text-muted-foreground" />
+											) : (
+												<EyeIcon className="size-4 text-muted-foreground" />
+											)}
+										</Button>
+									</div>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -116,21 +179,24 @@ export default function Login() {
 					/>
 					<Button
 						type="submit"
-						className="w-full"
+						className="w-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
 						disabled={mutation.isPending}
 					>
-						{mutation.isPending ? "Registering..." : "Register"}
+						{mutation.isPending ? "Creating account..." : "Create Account"}
 					</Button>
-					<div className="flex justify-center items-center gap-2">
-						<span className="text-sm text-muted-foreground">
-							Already have an account?
-						</span>
-						<Link to="/login" className="text-sm text-primary underline">
-							Login
-						</Link>
+					<div className="text-center pt-4 border-t border-border">
+						<p className="text-sm text-muted-foreground">
+							Already have an account?{" "}
+							<Link to="/login" className="text-primary hover:underline font-medium">
+								Sign in
+							</Link>
+						</p>
 					</div>
-				</form>
-			</Form>
+							</form>
+						</Form>
+					</div>
+				</div>
+			</main>
 		</div>
 	);
 }
