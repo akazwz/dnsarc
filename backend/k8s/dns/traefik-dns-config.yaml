@@ -1,0 +1,33 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    ports:
+      # 添加 DNS UDP 端口
+      dns-udp:
+        port: 53
+        expose:
+          default: true
+        exposedPort: 53
+        protocol: UDP
+      # 添加 DNS TCP 端口  
+      dns-tcp:
+        port: 53
+        expose:
+          default: true
+        exposedPort: 53
+        protocol: TCP
+    
+    # 启用 UDP 支持和 Kubernetes CRD Provider
+    providers:
+      kubernetesCRD:
+        enabled: true
+        allowCrossNamespace: true
+    
+    # 额外的入口点配置
+    additionalArguments:
+      - "--entrypoints.dns-udp.address=:53/udp"
+      - "--entrypoints.dns-tcp.address=:53/tcp"

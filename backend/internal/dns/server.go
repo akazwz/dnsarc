@@ -180,6 +180,8 @@ func (s *Server) Start() error {
 				s.handleSOA(m, q)
 			case dns.TypeNS:
 				s.handleNS(m, q)
+			case dns.TypeCAA:
+				s.handleCAA(m, q)
 			case dns.TypeA:
 				s.handleA(m, q, recordsA)
 			default:
@@ -295,6 +297,37 @@ func (s *Server) handleA(m *dns.Msg, q dns.Question, records []models.DNSRecord)
 		A: net.ParseIP(record.Content).To4(),
 	}
 	m.Answer = append(m.Answer, rr)
+}
+
+func (s *Server) handleCAA(m *dns.Msg, q dns.Question) {
+	// handleCAA 处理CAA记录查询请求
+	// CAA记录用于指定哪些证书颁发机构(CA)可以为该域名颁发证书
+	// 遵循RFC 6844标准：https://tools.ietf.org/html/rfc6844
+	// 当前配置：允许所有证书颁发机构颁发证书
+
+	// 要允许所有CA颁发证书，我们不返回任何限制性的CAA记录
+	// 根据RFC 6844，如果没有CAA记录或没有相关的issue记录，
+	// 则允许任何CA为该域名颁发证书
+
+	// 可选：只返回iodef记录用于违规报告，但不限制任何CA
+	caas := []*dns.CAA{
+		{
+			Hdr: dns.RR_Header{
+				Name:   q.Name,        // 查询的域名
+				Rrtype: dns.TypeCAA,   // 记录类型：CAA
+				Class:  dns.ClassINET, // 类别：Internet
+				Ttl:    3600,          // TTL：1小时
+			},
+			Flag:  0,                                                    // 标志位：0表示非关键
+			Tag:   "iodef",                                              // 标签：iodef表示事件报告
+			Value: "mailto:security@" + strings.TrimSuffix(q.Name, "."), // 违规报告邮箱
+		},
+	}
+
+	// 将所有CAA记录添加到DNS响应中
+	for _, caa := range caas {
+		m.Answer = append(m.Answer, caa)
+	}
 }
 
 func (s *Server) startSubscribeRedis() {

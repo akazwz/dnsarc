@@ -1,10 +1,16 @@
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
-  name: dnsarc-dns-daemonset
+  name: dnsarc-dns-deployment
   labels:
     app: dnsarc-dns
 spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: dnsarc-dns
@@ -20,16 +26,11 @@ spec:
           args: ["dns"]
           ports:
             - containerPort: 53
-              hostPort: 53
               protocol: UDP
               name: dns-udp
             - containerPort: 53
-              hostPort: 53
               protocol: TCP
               name: dns-tcp
-            - containerPort: 9090
-              protocol: TCP
-              name: connect-rpc
           env:
             - name: DATABASE_URL
               valueFrom:
