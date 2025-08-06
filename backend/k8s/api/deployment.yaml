@@ -7,6 +7,11 @@ metadata:
     app: dnsarc-api
 spec:
   replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   selector:
     matchLabels:
       app: dnsarc-api
@@ -40,6 +45,36 @@ spec:
                 secretKeyRef:
                   name: dnsarc-config
                   key: JWT_SECRET
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: dnsarc-config
+                  key: GOOGLE_CLIENT_ID
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: dnsarc-config
+                  key: GOOGLE_CLIENT_SECRET
+            - name: GOOGLE_REDIRECT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: dnsarc-config
+                  key: GOOGLE_REDIRECT_URL
+            - name: FRONTEND_URL
+              valueFrom:
+                secretKeyRef:
+                  name: dnsarc-config
+                  key: FRONTEND_URL
+            - name: NS1
+              valueFrom:
+                secretKeyRef:
+                  name: dnsarc-config
+                  key: NS1
+            - name: NS2
+              valueFrom:
+                secretKeyRef:
+                  name: dnsarc-config
+                  key: NS2
             
           
 

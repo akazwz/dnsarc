@@ -23,7 +23,7 @@ const (
 
 type CreateDNSRecordRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ZoneId        string                 `protobuf:"bytes,1,opt,name=zone_id,json=zoneId,proto3" json:"zone_id,omitempty"`
+	ZoneName      string                 `protobuf:"bytes,1,opt,name=zone_name,json=zoneName,proto3" json:"zone_name,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	Type          string                 `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
 	Content       string                 `protobuf:"bytes,4,opt,name=content,proto3" json:"content,omitempty"`
@@ -62,9 +62,9 @@ func (*CreateDNSRecordRequest) Descriptor() ([]byte, []int) {
 	return file_dns_record_v1_dns_record_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *CreateDNSRecordRequest) GetZoneId() string {
+func (x *CreateDNSRecordRequest) GetZoneName() string {
 	if x != nil {
-		return x.ZoneId
+		return x.ZoneName
 	}
 	return ""
 }
@@ -337,6 +337,94 @@ func (x *ListDNSRecordsResponse) GetRecords() []*DNSRecord {
 	return nil
 }
 
+type ListDNSRecordsByZoneNameRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ZoneName      string                 `protobuf:"bytes,1,opt,name=zone_name,json=zoneName,proto3" json:"zone_name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListDNSRecordsByZoneNameRequest) Reset() {
+	*x = ListDNSRecordsByZoneNameRequest{}
+	mi := &file_dns_record_v1_dns_record_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListDNSRecordsByZoneNameRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListDNSRecordsByZoneNameRequest) ProtoMessage() {}
+
+func (x *ListDNSRecordsByZoneNameRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_dns_record_v1_dns_record_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListDNSRecordsByZoneNameRequest.ProtoReflect.Descriptor instead.
+func (*ListDNSRecordsByZoneNameRequest) Descriptor() ([]byte, []int) {
+	return file_dns_record_v1_dns_record_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ListDNSRecordsByZoneNameRequest) GetZoneName() string {
+	if x != nil {
+		return x.ZoneName
+	}
+	return ""
+}
+
+type ListDNSRecordsByZoneNameResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Records       []*DNSRecord           `protobuf:"bytes,1,rep,name=records,proto3" json:"records,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListDNSRecordsByZoneNameResponse) Reset() {
+	*x = ListDNSRecordsByZoneNameResponse{}
+	mi := &file_dns_record_v1_dns_record_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListDNSRecordsByZoneNameResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListDNSRecordsByZoneNameResponse) ProtoMessage() {}
+
+func (x *ListDNSRecordsByZoneNameResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_dns_record_v1_dns_record_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListDNSRecordsByZoneNameResponse.ProtoReflect.Descriptor instead.
+func (*ListDNSRecordsByZoneNameResponse) Descriptor() ([]byte, []int) {
+	return file_dns_record_v1_dns_record_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ListDNSRecordsByZoneNameResponse) GetRecords() []*DNSRecord {
+	if x != nil {
+		return x.Records
+	}
+	return nil
+}
+
 type GetDNSRecordRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -346,7 +434,7 @@ type GetDNSRecordRequest struct {
 
 func (x *GetDNSRecordRequest) Reset() {
 	*x = GetDNSRecordRequest{}
-	mi := &file_dns_record_v1_dns_record_proto_msgTypes[5]
+	mi := &file_dns_record_v1_dns_record_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -358,7 +446,7 @@ func (x *GetDNSRecordRequest) String() string {
 func (*GetDNSRecordRequest) ProtoMessage() {}
 
 func (x *GetDNSRecordRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_dns_record_v1_dns_record_proto_msgTypes[5]
+	mi := &file_dns_record_v1_dns_record_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -371,7 +459,7 @@ func (x *GetDNSRecordRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDNSRecordRequest.ProtoReflect.Descriptor instead.
 func (*GetDNSRecordRequest) Descriptor() ([]byte, []int) {
-	return file_dns_record_v1_dns_record_proto_rawDescGZIP(), []int{5}
+	return file_dns_record_v1_dns_record_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetDNSRecordRequest) GetId() string {
@@ -390,7 +478,7 @@ type GetDNSRecordResponse struct {
 
 func (x *GetDNSRecordResponse) Reset() {
 	*x = GetDNSRecordResponse{}
-	mi := &file_dns_record_v1_dns_record_proto_msgTypes[6]
+	mi := &file_dns_record_v1_dns_record_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -402,7 +490,7 @@ func (x *GetDNSRecordResponse) String() string {
 func (*GetDNSRecordResponse) ProtoMessage() {}
 
 func (x *GetDNSRecordResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_dns_record_v1_dns_record_proto_msgTypes[6]
+	mi := &file_dns_record_v1_dns_record_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -415,7 +503,7 @@ func (x *GetDNSRecordResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDNSRecordResponse.ProtoReflect.Descriptor instead.
 func (*GetDNSRecordResponse) Descriptor() ([]byte, []int) {
-	return file_dns_record_v1_dns_record_proto_rawDescGZIP(), []int{6}
+	return file_dns_record_v1_dns_record_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *GetDNSRecordResponse) GetRecord() *DNSRecord {
@@ -438,7 +526,7 @@ type UpdateDNSRecordRequest struct {
 
 func (x *UpdateDNSRecordRequest) Reset() {
 	*x = UpdateDNSRecordRequest{}
-	mi := &file_dns_record_v1_dns_record_proto_msgTypes[7]
+	mi := &file_dns_record_v1_dns_record_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -450,7 +538,7 @@ func (x *UpdateDNSRecordRequest) String() string {
 func (*UpdateDNSRecordRequest) ProtoMessage() {}
 
 func (x *UpdateDNSRecordRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_dns_record_v1_dns_record_proto_msgTypes[7]
+	mi := &file_dns_record_v1_dns_record_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -463,7 +551,7 @@ func (x *UpdateDNSRecordRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateDNSRecordRequest.ProtoReflect.Descriptor instead.
 func (*UpdateDNSRecordRequest) Descriptor() ([]byte, []int) {
-	return file_dns_record_v1_dns_record_proto_rawDescGZIP(), []int{7}
+	return file_dns_record_v1_dns_record_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *UpdateDNSRecordRequest) GetId() string {
@@ -510,7 +598,7 @@ type UpdateDNSRecordResponse struct {
 
 func (x *UpdateDNSRecordResponse) Reset() {
 	*x = UpdateDNSRecordResponse{}
-	mi := &file_dns_record_v1_dns_record_proto_msgTypes[8]
+	mi := &file_dns_record_v1_dns_record_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -522,7 +610,7 @@ func (x *UpdateDNSRecordResponse) String() string {
 func (*UpdateDNSRecordResponse) ProtoMessage() {}
 
 func (x *UpdateDNSRecordResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_dns_record_v1_dns_record_proto_msgTypes[8]
+	mi := &file_dns_record_v1_dns_record_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -535,7 +623,7 @@ func (x *UpdateDNSRecordResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateDNSRecordResponse.ProtoReflect.Descriptor instead.
 func (*UpdateDNSRecordResponse) Descriptor() ([]byte, []int) {
-	return file_dns_record_v1_dns_record_proto_rawDescGZIP(), []int{8}
+	return file_dns_record_v1_dns_record_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *UpdateDNSRecordResponse) GetRecord() *DNSRecord {
@@ -554,7 +642,7 @@ type DeleteDNSRecordRequest struct {
 
 func (x *DeleteDNSRecordRequest) Reset() {
 	*x = DeleteDNSRecordRequest{}
-	mi := &file_dns_record_v1_dns_record_proto_msgTypes[9]
+	mi := &file_dns_record_v1_dns_record_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -566,7 +654,7 @@ func (x *DeleteDNSRecordRequest) String() string {
 func (*DeleteDNSRecordRequest) ProtoMessage() {}
 
 func (x *DeleteDNSRecordRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_dns_record_v1_dns_record_proto_msgTypes[9]
+	mi := &file_dns_record_v1_dns_record_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -579,7 +667,7 @@ func (x *DeleteDNSRecordRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteDNSRecordRequest.ProtoReflect.Descriptor instead.
 func (*DeleteDNSRecordRequest) Descriptor() ([]byte, []int) {
-	return file_dns_record_v1_dns_record_proto_rawDescGZIP(), []int{9}
+	return file_dns_record_v1_dns_record_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *DeleteDNSRecordRequest) GetId() string {
@@ -597,7 +685,7 @@ type DeleteDNSRecordResponse struct {
 
 func (x *DeleteDNSRecordResponse) Reset() {
 	*x = DeleteDNSRecordResponse{}
-	mi := &file_dns_record_v1_dns_record_proto_msgTypes[10]
+	mi := &file_dns_record_v1_dns_record_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -609,7 +697,7 @@ func (x *DeleteDNSRecordResponse) String() string {
 func (*DeleteDNSRecordResponse) ProtoMessage() {}
 
 func (x *DeleteDNSRecordResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_dns_record_v1_dns_record_proto_msgTypes[10]
+	mi := &file_dns_record_v1_dns_record_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -622,16 +710,16 @@ func (x *DeleteDNSRecordResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteDNSRecordResponse.ProtoReflect.Descriptor instead.
 func (*DeleteDNSRecordResponse) Descriptor() ([]byte, []int) {
-	return file_dns_record_v1_dns_record_proto_rawDescGZIP(), []int{10}
+	return file_dns_record_v1_dns_record_proto_rawDescGZIP(), []int{12}
 }
 
 var File_dns_record_v1_dns_record_proto protoreflect.FileDescriptor
 
 const file_dns_record_v1_dns_record_proto_rawDesc = "" +
 	"\n" +
-	"\x1edns_record/v1/dns_record.proto\x12\rdns_record.v1\"\x85\x01\n" +
-	"\x16CreateDNSRecordRequest\x12\x17\n" +
-	"\azone_id\x18\x01 \x01(\tR\x06zoneId\x12\x12\n" +
+	"\x1edns_record/v1/dns_record.proto\x12\rdns_record.v1\"\x89\x01\n" +
+	"\x16CreateDNSRecordRequest\x12\x1b\n" +
+	"\tzone_name\x18\x01 \x01(\tR\bzoneName\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
 	"\x04type\x18\x03 \x01(\tR\x04type\x12\x18\n" +
 	"\acontent\x18\x04 \x01(\tR\acontent\x12\x10\n" +
@@ -653,6 +741,10 @@ const file_dns_record_v1_dns_record_proto_rawDesc = "" +
 	"\x15ListDNSRecordsRequest\x12\x17\n" +
 	"\azone_id\x18\x01 \x01(\tR\x06zoneId\"L\n" +
 	"\x16ListDNSRecordsResponse\x122\n" +
+	"\arecords\x18\x01 \x03(\v2\x18.dns_record.v1.DNSRecordR\arecords\">\n" +
+	"\x1fListDNSRecordsByZoneNameRequest\x12\x1b\n" +
+	"\tzone_name\x18\x01 \x01(\tR\bzoneName\"V\n" +
+	" ListDNSRecordsByZoneNameResponse\x122\n" +
 	"\arecords\x18\x01 \x03(\v2\x18.dns_record.v1.DNSRecordR\arecords\"%\n" +
 	"\x13GetDNSRecordRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"H\n" +
@@ -668,10 +760,11 @@ const file_dns_record_v1_dns_record_proto_rawDesc = "" +
 	"\x06record\x18\x01 \x01(\v2\x18.dns_record.v1.DNSRecordR\x06record\"(\n" +
 	"\x16DeleteDNSRecordRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x19\n" +
-	"\x17DeleteDNSRecordResponse2\xfa\x03\n" +
+	"\x17DeleteDNSRecordResponse2\xf9\x04\n" +
 	"\x10DNSRecordService\x12b\n" +
 	"\x0fCreateDNSRecord\x12%.dns_record.v1.CreateDNSRecordRequest\x1a&.dns_record.v1.CreateDNSRecordResponse\"\x00\x12_\n" +
-	"\x0eListDNSRecords\x12$.dns_record.v1.ListDNSRecordsRequest\x1a%.dns_record.v1.ListDNSRecordsResponse\"\x00\x12Y\n" +
+	"\x0eListDNSRecords\x12$.dns_record.v1.ListDNSRecordsRequest\x1a%.dns_record.v1.ListDNSRecordsResponse\"\x00\x12}\n" +
+	"\x18ListDNSRecordsByZoneName\x12..dns_record.v1.ListDNSRecordsByZoneNameRequest\x1a/.dns_record.v1.ListDNSRecordsByZoneNameResponse\"\x00\x12Y\n" +
 	"\fGetDNSRecord\x12\".dns_record.v1.GetDNSRecordRequest\x1a#.dns_record.v1.GetDNSRecordResponse\"\x00\x12b\n" +
 	"\x0fUpdateDNSRecord\x12%.dns_record.v1.UpdateDNSRecordRequest\x1a&.dns_record.v1.UpdateDNSRecordResponse\"\x00\x12b\n" +
 	"\x0fDeleteDNSRecord\x12%.dns_record.v1.DeleteDNSRecordRequest\x1a&.dns_record.v1.DeleteDNSRecordResponse\"\x00B'Z%dnsarc/gen/dns_record/v1;dns_recordv1b\x06proto3"
@@ -688,40 +781,45 @@ func file_dns_record_v1_dns_record_proto_rawDescGZIP() []byte {
 	return file_dns_record_v1_dns_record_proto_rawDescData
 }
 
-var file_dns_record_v1_dns_record_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_dns_record_v1_dns_record_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_dns_record_v1_dns_record_proto_goTypes = []any{
-	(*CreateDNSRecordRequest)(nil),  // 0: dns_record.v1.CreateDNSRecordRequest
-	(*DNSRecord)(nil),               // 1: dns_record.v1.DNSRecord
-	(*CreateDNSRecordResponse)(nil), // 2: dns_record.v1.CreateDNSRecordResponse
-	(*ListDNSRecordsRequest)(nil),   // 3: dns_record.v1.ListDNSRecordsRequest
-	(*ListDNSRecordsResponse)(nil),  // 4: dns_record.v1.ListDNSRecordsResponse
-	(*GetDNSRecordRequest)(nil),     // 5: dns_record.v1.GetDNSRecordRequest
-	(*GetDNSRecordResponse)(nil),    // 6: dns_record.v1.GetDNSRecordResponse
-	(*UpdateDNSRecordRequest)(nil),  // 7: dns_record.v1.UpdateDNSRecordRequest
-	(*UpdateDNSRecordResponse)(nil), // 8: dns_record.v1.UpdateDNSRecordResponse
-	(*DeleteDNSRecordRequest)(nil),  // 9: dns_record.v1.DeleteDNSRecordRequest
-	(*DeleteDNSRecordResponse)(nil), // 10: dns_record.v1.DeleteDNSRecordResponse
+	(*CreateDNSRecordRequest)(nil),           // 0: dns_record.v1.CreateDNSRecordRequest
+	(*DNSRecord)(nil),                        // 1: dns_record.v1.DNSRecord
+	(*CreateDNSRecordResponse)(nil),          // 2: dns_record.v1.CreateDNSRecordResponse
+	(*ListDNSRecordsRequest)(nil),            // 3: dns_record.v1.ListDNSRecordsRequest
+	(*ListDNSRecordsResponse)(nil),           // 4: dns_record.v1.ListDNSRecordsResponse
+	(*ListDNSRecordsByZoneNameRequest)(nil),  // 5: dns_record.v1.ListDNSRecordsByZoneNameRequest
+	(*ListDNSRecordsByZoneNameResponse)(nil), // 6: dns_record.v1.ListDNSRecordsByZoneNameResponse
+	(*GetDNSRecordRequest)(nil),              // 7: dns_record.v1.GetDNSRecordRequest
+	(*GetDNSRecordResponse)(nil),             // 8: dns_record.v1.GetDNSRecordResponse
+	(*UpdateDNSRecordRequest)(nil),           // 9: dns_record.v1.UpdateDNSRecordRequest
+	(*UpdateDNSRecordResponse)(nil),          // 10: dns_record.v1.UpdateDNSRecordResponse
+	(*DeleteDNSRecordRequest)(nil),           // 11: dns_record.v1.DeleteDNSRecordRequest
+	(*DeleteDNSRecordResponse)(nil),          // 12: dns_record.v1.DeleteDNSRecordResponse
 }
 var file_dns_record_v1_dns_record_proto_depIdxs = []int32{
 	1,  // 0: dns_record.v1.CreateDNSRecordResponse.record:type_name -> dns_record.v1.DNSRecord
 	1,  // 1: dns_record.v1.ListDNSRecordsResponse.records:type_name -> dns_record.v1.DNSRecord
-	1,  // 2: dns_record.v1.GetDNSRecordResponse.record:type_name -> dns_record.v1.DNSRecord
-	1,  // 3: dns_record.v1.UpdateDNSRecordResponse.record:type_name -> dns_record.v1.DNSRecord
-	0,  // 4: dns_record.v1.DNSRecordService.CreateDNSRecord:input_type -> dns_record.v1.CreateDNSRecordRequest
-	3,  // 5: dns_record.v1.DNSRecordService.ListDNSRecords:input_type -> dns_record.v1.ListDNSRecordsRequest
-	5,  // 6: dns_record.v1.DNSRecordService.GetDNSRecord:input_type -> dns_record.v1.GetDNSRecordRequest
-	7,  // 7: dns_record.v1.DNSRecordService.UpdateDNSRecord:input_type -> dns_record.v1.UpdateDNSRecordRequest
-	9,  // 8: dns_record.v1.DNSRecordService.DeleteDNSRecord:input_type -> dns_record.v1.DeleteDNSRecordRequest
-	2,  // 9: dns_record.v1.DNSRecordService.CreateDNSRecord:output_type -> dns_record.v1.CreateDNSRecordResponse
-	4,  // 10: dns_record.v1.DNSRecordService.ListDNSRecords:output_type -> dns_record.v1.ListDNSRecordsResponse
-	6,  // 11: dns_record.v1.DNSRecordService.GetDNSRecord:output_type -> dns_record.v1.GetDNSRecordResponse
-	8,  // 12: dns_record.v1.DNSRecordService.UpdateDNSRecord:output_type -> dns_record.v1.UpdateDNSRecordResponse
-	10, // 13: dns_record.v1.DNSRecordService.DeleteDNSRecord:output_type -> dns_record.v1.DeleteDNSRecordResponse
-	9,  // [9:14] is the sub-list for method output_type
-	4,  // [4:9] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	1,  // 2: dns_record.v1.ListDNSRecordsByZoneNameResponse.records:type_name -> dns_record.v1.DNSRecord
+	1,  // 3: dns_record.v1.GetDNSRecordResponse.record:type_name -> dns_record.v1.DNSRecord
+	1,  // 4: dns_record.v1.UpdateDNSRecordResponse.record:type_name -> dns_record.v1.DNSRecord
+	0,  // 5: dns_record.v1.DNSRecordService.CreateDNSRecord:input_type -> dns_record.v1.CreateDNSRecordRequest
+	3,  // 6: dns_record.v1.DNSRecordService.ListDNSRecords:input_type -> dns_record.v1.ListDNSRecordsRequest
+	5,  // 7: dns_record.v1.DNSRecordService.ListDNSRecordsByZoneName:input_type -> dns_record.v1.ListDNSRecordsByZoneNameRequest
+	7,  // 8: dns_record.v1.DNSRecordService.GetDNSRecord:input_type -> dns_record.v1.GetDNSRecordRequest
+	9,  // 9: dns_record.v1.DNSRecordService.UpdateDNSRecord:input_type -> dns_record.v1.UpdateDNSRecordRequest
+	11, // 10: dns_record.v1.DNSRecordService.DeleteDNSRecord:input_type -> dns_record.v1.DeleteDNSRecordRequest
+	2,  // 11: dns_record.v1.DNSRecordService.CreateDNSRecord:output_type -> dns_record.v1.CreateDNSRecordResponse
+	4,  // 12: dns_record.v1.DNSRecordService.ListDNSRecords:output_type -> dns_record.v1.ListDNSRecordsResponse
+	6,  // 13: dns_record.v1.DNSRecordService.ListDNSRecordsByZoneName:output_type -> dns_record.v1.ListDNSRecordsByZoneNameResponse
+	8,  // 14: dns_record.v1.DNSRecordService.GetDNSRecord:output_type -> dns_record.v1.GetDNSRecordResponse
+	10, // 15: dns_record.v1.DNSRecordService.UpdateDNSRecord:output_type -> dns_record.v1.UpdateDNSRecordResponse
+	12, // 16: dns_record.v1.DNSRecordService.DeleteDNSRecord:output_type -> dns_record.v1.DeleteDNSRecordResponse
+	11, // [11:17] is the sub-list for method output_type
+	5,  // [5:11] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_dns_record_v1_dns_record_proto_init() }
@@ -735,7 +833,7 @@ func file_dns_record_v1_dns_record_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_dns_record_v1_dns_record_proto_rawDesc), len(file_dns_record_v1_dns_record_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -76,7 +76,7 @@ func NewServer() *Server {
 	go func() {
 		// 初始化bloom filter
 		zoneNames := make([]string, 0)
-		if err := db.Model(&models.Zone{}).Select("zone_name").Find(&zoneNames).Error; err != nil {
+		if err := db.Model(&models.Zone{}).Select("zone_name").Where("is_active = ?", true).Find(&zoneNames).Error; err != nil {
 			slog.Error("failed to get zone names for bloom filter", "error", err)
 			return
 		}
@@ -99,7 +99,7 @@ func (s *Server) rebuildBloomFilter() {
 	slog.Info("rebuilding bloom filter")
 	bloomFilter := bloom.NewWithEstimates(1000000, 0.01)
 	zoneNames := make([]string, 0)
-	if err := s.db.Model(&models.Zone{}).Select("zone_name").Find(&zoneNames).Error; err != nil {
+	if err := s.db.Model(&models.Zone{}).Select("zone_name").Where("is_active = ?", true).Find(&zoneNames).Error; err != nil {
 		slog.Error("failed to get zone names for bloom filter", "error", err)
 		return
 	}

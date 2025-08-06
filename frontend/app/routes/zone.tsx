@@ -1,7 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { DNSRecord } from "gen/dns_record/v1/dns_record_pb";
-import { DatabaseIcon, EditIcon, GlobeIcon, Loader2Icon, PlusIcon, Trash2Icon } from "lucide-react";
+import {
+	DatabaseIcon,
+	EditIcon,
+	GlobeIcon,
+	Loader2Icon,
+	PlusIcon,
+	Trash2Icon,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { z } from "zod";
@@ -33,7 +40,7 @@ import {
 	SelectValue,
 } from "~/components/ui/select";
 import { dnsRecordClient, zoneClient } from "~/connect";
-import type { Route } from "./+types/zone";
+import type { Route } from "./dash/+types";
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 	return {
@@ -108,7 +115,9 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 					<div className="flex items-center justify-between">
 						<div className="flex items-center space-x-3 group">
 							<div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-200">
-								<span className="text-primary-foreground font-bold text-sm">D</span>
+								<span className="text-primary-foreground font-bold text-sm">
+									D
+								</span>
 							</div>
 							<span className="text-xl font-semibold text-foreground tracking-tight">
 								DNSARC
@@ -117,7 +126,7 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 						<Button
 							variant="ghost"
 							size="sm"
-							className="flex items-center space-x-2"
+							className="flex items-center"
 							onClick={() => navigate("/dash")}
 						>
 							<GlobeIcon className="size-4" />
@@ -310,7 +319,9 @@ export default function Records({ loaderData }: Route.ComponentProps) {
 					{isLoading ? (
 						<div className="flex items-center justify-center py-12">
 							<Loader2Icon className="size-6 animate-spin text-muted-foreground" />
-							<span className="ml-3 text-muted-foreground">Loading records...</span>
+							<span className="ml-3 text-muted-foreground">
+								Loading records...
+							</span>
 						</div>
 					) : data?.length === 0 ? (
 						<div className="text-center py-12">

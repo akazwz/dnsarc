@@ -43,7 +43,7 @@ import { useAuthStore } from "~/stores/auth";
 
 export default function Dash() {
 	const navigate = useNavigate();
-	const { data: user, isLoading: userLoading } = useQuery({
+	const { data: user } = useQuery({
 		queryKey: ["user"],
 		queryFn: async () => {
 			const response = await authClient.whoAmI({});
@@ -60,10 +60,9 @@ export default function Dash() {
 			return response.zones;
 		},
 	});
-
 	const logout = () => {
 		useAuthStore.getState().signOut();
-		navigate("/login");
+		navigate("/auth");
 	};
 	const form = useForm<z.infer<typeof schema>>({
 		resolver: zodResolver(schema),
@@ -88,7 +87,9 @@ export default function Dash() {
 					<div className="flex items-center justify-between">
 						<div className="flex items-center space-x-3 group">
 							<div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-200">
-								<span className="text-primary-foreground font-bold text-sm">D</span>
+								<span className="text-primary-foreground font-bold text-sm">
+									D
+								</span>
 							</div>
 							<span className="text-xl font-semibold text-foreground tracking-tight">
 								DNSARC
@@ -97,25 +98,24 @@ export default function Dash() {
 						<Button
 							variant="ghost"
 							size="sm"
-							className="flex items-center space-x-2"
+							className="flex items-center"
 							onClick={logout}
 						>
 							<LogOutIcon className="size-4" />
-							<span>Sign Out</span>
+							<span>Logout</span>
 						</Button>
 					</div>
 				</div>
 			</header>
 
 			<div className="max-w-6xl mx-auto p-6">
-
 				{/* User Section */}
 				<div className="bg-card rounded-xl shadow-lg p-6 mb-8 border border-border">
 					<div className="flex items-center justify-between">
 						<div className="flex items-center space-x-4">
 							<div className="relative">
 								<Avatar className="size-16 ring-4 ring-background shadow-lg">
-									<AvatarImage src="https://github.com/akazwz.png" />
+									<AvatarImage src={user?.avatar || ""} />
 									<AvatarFallback className="bg-primary text-primary-foreground text-lg font-semibold">
 										{user?.email?.charAt(0).toUpperCase() || "U"}
 									</AvatarFallback>
@@ -127,7 +127,6 @@ export default function Dash() {
 							<div>
 								<h1 className="text-2xl font-bold text-foreground">
 									Welcome back
-									{user?.email ? `, ${user.email.split("@")[0]}` : ""}!
 								</h1>
 								<p className="text-muted-foreground flex items-center">
 									<UserIcon className="size-4 mr-1" />
@@ -143,7 +142,9 @@ export default function Dash() {
 					<div className="bg-card rounded-xl shadow-lg p-6 border border-border">
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="text-sm font-medium text-muted-foreground">Total Zones</p>
+								<p className="text-sm font-medium text-muted-foreground">
+									Total Zones
+								</p>
 								<p className="text-3xl font-bold text-foreground">
 									{zonesLoading ? "..." : zones?.length || 0}
 								</p>
@@ -252,7 +253,9 @@ export default function Dash() {
 					{zonesLoading ? (
 						<div className="flex items-center justify-center py-12">
 							<Loader2Icon className="size-6 animate-spin text-muted-foreground" />
-							<span className="ml-3 text-muted-foreground">Loading zones...</span>
+							<span className="ml-3 text-muted-foreground">
+								Loading zones...
+							</span>
 						</div>
 					) : zones?.length === 0 ? (
 						<div className="text-center py-12">

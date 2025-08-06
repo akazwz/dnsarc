@@ -44,16 +44,15 @@ func (h *DNSRecordHandler) CreateDNSRecord(ctx context.Context, req *connect.Req
 	name := strings.ToLower(req.Msg.Name) // 这里 name 是 @ 或者 api 这种，需要转换为 name
 	name = strings.TrimSuffix(name, ".")
 	var zone models.Zone
-	if err := h.db.Where("user_id = ? AND id = ?", userID, req.Msg.ZoneId).First(&zone).Error; err != nil {
+	if err := h.db.Where("user_id = ? AND zone_name = ?", userID, req.Msg.ZoneName).First(&zone).Error; err != nil {
 		return nil, connect.NewError(connect.CodeNotFound, err)
 	}
 	// 拼接成完整的 name
-	if name == "@" {
+	if name == "@" || name == "" {
 		name = zone.ZoneName
 	} else {
 		name = name + "." + zone.ZoneName
 	}
-
 	record := models.DNSRecord{
 		UserID:   userID,
 		ZoneID:   zone.ID,
@@ -94,6 +93,21 @@ func (h *DNSRecordHandler) ListDNSRecords(ctx context.Context, req *connect.Requ
 	}, nil
 }
 
+func (h *DNSRecordHandler) ListDNSRecordsByZoneName(ctx context.Context, req *connect.Request[dns_recordv1.ListDNSRecordsByZoneNameRequest]) (*connect.Response[dns_recordv1.ListDNSRecordsByZoneNameResponse], error) {
+	userID, _ := interceptors.GetUserID(ctx)
+	var records []models.DNSRecord
+	if err := h.db.Where("user_id = ? AND zone_name = ?", userID, req.Msg.ZoneName).Find(&records).Error; err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	return &connect.Response[dns_recordv1.ListDNSRecordsByZoneNameResponse]{
+		Msg: &dns_recordv1.ListDNSRecordsByZoneNameResponse{
+			Records: lo.Map(records, func(record models.DNSRecord, _ int) *dns_recordv1.DNSRecord {
+				return record.ToProto()
+			}),
+		},
+	}, nil
+}
+
 func (h *DNSRecordHandler) GetDNSRecord(ctx context.Context, req *connect.Request[dns_recordv1.GetDNSRecordRequest]) (*connect.Response[dns_recordv1.GetDNSRecordResponse], error) {
 	userID, _ := interceptors.GetUserID(ctx)
 	var record models.DNSRecord
@@ -113,11 +127,20 @@ func (h *DNSRecordHandler) UpdateDNSRecord(ctx context.Context, req *connect.Req
 	}
 	name := strings.ToLower(req.Msg.Name)
 	name = strings.TrimSuffix(name, ".")
-	record.Name = name
-	record.Type = req.Msg.Type
-	record.Content = req.Msg.Content
-	record.TTL = int(req.Msg.Ttl)
-	if err := h.db.Save(&record).Error; err != nil {
+	updateMap := map[string]any{}
+	if name != "" {
+		updateMap["name"] = name
+	}
+	if req.Msg.Type != "" {
+		updateMap["type"] = req.Msg.Type
+	}
+	if req.Msg.Content != "" {
+		updateMap["content"] = req.Msg.Content
+	}
+	if req.Msg.Ttl != 0 {
+		updateMap["ttl"] = int(req.Msg.Ttl)
+	}
+	if err := h.db.Model(&record).Updates(updateMap).Error; err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	go func() {

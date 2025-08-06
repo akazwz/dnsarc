@@ -1,5 +1,13 @@
 package event
 
+import (
+	"context"
+	"encoding/json"
+	"log/slog"
+
+	"github.com/redis/go-redis/v9"
+)
+
 type EventType string
 
 const (
@@ -14,4 +22,17 @@ const (
 type Event struct {
 	Type     EventType `json:"type"`
 	ZoneName string    `json:"zone_name"`
+}
+
+func PublishEvent(rdb *redis.Client, event Event) {
+	ctx := context.Background()
+	slog.Info("publish event", "event", event)
+	json, err := json.Marshal(event)
+	if err != nil {
+		slog.Error("failed to marshal event", "error", err)
+		return
+	}
+	if err := rdb.Publish(ctx, "event", string(json)).Err(); err != nil {
+		slog.Error("failed to publish event", "error", err)
+	}
 }

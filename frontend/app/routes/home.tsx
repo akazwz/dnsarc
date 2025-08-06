@@ -1,12 +1,48 @@
+import { LogInIcon, MapPinIcon, ScaleIcon, ZapIcon } from "lucide-react";
 import { Link } from "react-router";
-import { 
-  ArrowRightIcon, 
-  MapPinIcon, 
-  ScaleIcon, 
-  ZapIcon 
-} from "lucide-react";
 import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+	Card,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "~/components/ui/card";
+
+export function meta() {
+	return [
+		{ title: "DNSARC - Smart DNS Management for Developers" },
+		{
+			name: "description",
+			content:
+				"Intelligent DNS solution with geo-routing, smart load balancing, and fast updates. Built for developers who need reliable DNS with modern features.",
+		},
+		{
+			name: "keywords",
+			content:
+				"DNS, Smart DNS, Geo DNS, Load Balancing, DNS Management, Developer Tools, API",
+		},
+		{ property: "og:type", content: "website" },
+		{ property: "og:url", content: "https://dnsarc.com/" },
+		{
+			property: "og:title",
+			content: "DNSARC - Smart DNS Management for Developers",
+		},
+		{
+			property: "og:description",
+			content:
+				"Intelligent DNS solution with geo-routing, smart load balancing, and fast updates.",
+		},
+		{
+			name: "twitter:title",
+			content: "DNSARC - Smart DNS Management for Developers",
+		},
+		{
+			name: "twitter:description",
+			content:
+				"Intelligent DNS solution with geo-routing, smart load balancing, and fast updates.",
+		},
+	];
+}
 
 export default function Home() {
 	return (
@@ -16,22 +52,20 @@ export default function Home() {
 				<div className="max-w-6xl mx-auto px-6 py-4">
 					<div className="flex items-center justify-between">
 						<div className="flex items-center space-x-3 group">
-							<div className="w-8 h-8 bg-gradient-to-br from-gray-900 to-gray-700 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-200">
-								<span className="text-white font-bold text-sm">D</span>
-							</div>
+							<img
+								src="/favicon-32.png"
+								alt="DNSARC logo"
+								className="w-8 h-8 rounded-lg shadow-sm group-hover:shadow-md transition-all duration-200"
+							/>
 							<span className="text-xl font-semibold text-black tracking-tight">
 								DNSARC
 							</span>
 						</div>
 						<nav className="flex items-center space-x-8">
 							<Button variant="ghost" asChild>
-								<Link to="/login">
-									Sign In
-								</Link>
-							</Button>
-							<Button asChild>
-								<Link to="/register">
-									Get Started
+								<Link to="/auth" prefetch="viewport" viewTransition>
+									<LogInIcon />
+									Login
 								</Link>
 							</Button>
 						</nav>
@@ -44,9 +78,12 @@ export default function Home() {
 				{/* Background decoration */}
 				<div className="absolute inset-0 -z-10">
 					<div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse"></div>
-					<div className="absolute bottom-0 left-1/3 w-96 h-96 bg-purple-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse" style={{animationDelay: "2s"}}></div>
+					<div
+						className="absolute bottom-0 left-1/3 w-96 h-96 bg-purple-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse"
+						style={{ animationDelay: "2s" }}
+					></div>
 				</div>
-				
+
 				<div className="max-w-6xl mx-auto px-6 py-32">
 					<div className="text-center space-y-12">
 						<div className="space-y-8">
@@ -54,40 +91,40 @@ export default function Home() {
 								<span className="w-2 h-2 bg-orange-500 rounded-full mr-2 animate-pulse"></span>
 								Private Beta
 							</div>
-							<h1 className="text-6xl md:text-8xl font-bold text-black leading-tight tracking-tight">
+							<h1 className="text-5xl md:text-7xl font-bold text-black leading-tight tracking-tight">
 								Smart DNS
 								<br />
 								<span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
 									Management
 								</span>
 							</h1>
-							<p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-								Intelligent DNS solution with geo-routing, smart load balancing, and fast updates. 
-								Built for developers who need reliable DNS with modern features.
+							<p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+								Intelligent DNS solution with geo-routing, smart load balancing,
+								and fast updates. Built for developers who need reliable DNS
+								with modern features.
 							</p>
 						</div>
 
-						<div className="flex justify-center items-center pt-8">
-							<Button size="lg" className="shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5" asChild>
-								<Link to="/register">
-									Get Started
-									<ArrowRightIcon className="w-4 h-4" />
-								</Link>
-							</Button>
-						</div>
-
 						{/* Stats */}
-						<div className="grid grid-cols-3 gap-8 pt-16 border-t border-gray-200/60">
+						<div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-16 border-t border-gray-200/60">
 							<div className="text-center">
-								<div className="text-3xl font-bold text-black">&lt;100ms</div>
-								<div className="text-sm text-gray-600 mt-1">Update Propagation</div>
+								<div className="text-2xl md:text-3xl font-bold text-black">
+									&lt;100ms
+								</div>
+								<div className="text-sm text-gray-600 mt-1">
+									Update Propagation
+								</div>
 							</div>
 							<div className="text-center">
-								<div className="text-3xl font-bold text-black">API</div>
+								<div className="text-2xl md:text-3xl font-bold text-black">
+									API
+								</div>
 								<div className="text-sm text-gray-600 mt-1">Full Control</div>
 							</div>
 							<div className="text-center">
-								<div className="text-3xl font-bold text-black">24/7</div>
+								<div className="text-2xl md:text-3xl font-bold text-black">
+									24/7
+								</div>
 								<div className="text-sm text-gray-600 mt-1">Monitoring</div>
 							</div>
 						</div>
@@ -102,8 +139,9 @@ export default function Home() {
 								</div>
 								<CardTitle className="text-lg">Geo DNS Routing</CardTitle>
 								<CardDescription className="text-gray-600">
-									Smart geographic routing directs users to the optimal server based on their location. 
-									Reduce latency and improve user experience with intelligent traffic distribution.
+									Smart geographic routing directs users to the optimal server
+									based on their location. Reduce latency and improve user
+									experience with intelligent traffic distribution.
 								</CardDescription>
 							</CardHeader>
 						</Card>
@@ -115,8 +153,9 @@ export default function Home() {
 								</div>
 								<CardTitle className="text-lg">Smart Load Balancing</CardTitle>
 								<CardDescription className="text-gray-600">
-									Intelligent traffic distribution across available nodes with automatic health monitoring 
-									and failover. Keep your services running smoothly even during maintenance.
+									Intelligent traffic distribution across available nodes with
+									automatic health monitoring and failover. Keep your services
+									running smoothly even during maintenance.
 								</CardDescription>
 							</CardHeader>
 						</Card>
@@ -128,8 +167,9 @@ export default function Home() {
 								</div>
 								<CardTitle className="text-lg">Fast Updates</CardTitle>
 								<CardDescription className="text-gray-600">
-									DNS changes propagate quickly across all nodes with fast update cycles. 
-									Monitor your DNS records and track changes with live status updates.
+									DNS changes propagate quickly across all nodes with fast
+									update cycles. Monitor your DNS records and track changes with
+									live status updates.
 								</CardDescription>
 							</CardHeader>
 						</Card>
@@ -143,13 +183,17 @@ export default function Home() {
 				<div className="max-w-6xl mx-auto px-6 text-center relative">
 					<div className="space-y-4">
 						<div className="flex items-center justify-center space-x-3 mb-8">
-							<div className="w-8 h-8 bg-gradient-to-br from-gray-900 to-gray-700 rounded-lg flex items-center justify-center shadow-sm">
-								<span className="text-white font-bold text-sm">D</span>
-							</div>
-							<span className="text-xl font-semibold text-black tracking-tight">DNSARC</span>
+							<img
+								src="/icon-192.png"
+								alt="DNSARC logo"
+								className="w-8 h-8 rounded-lg shadow-sm"
+							/>
+							<span className="text-xl font-semibold text-black tracking-tight">
+								DNSARC
+							</span>
 						</div>
 						<p className="text-gray-500 text-sm">
-							© 2025 DNSARC. All rights reserved | Smart DNS for Developers
+							2025 DNSARC. All rights reserved | Smart DNS for Developers
 						</p>
 					</div>
 				</div>
@@ -157,5 +201,3 @@ export default function Home() {
 		</div>
 	);
 }
-
-

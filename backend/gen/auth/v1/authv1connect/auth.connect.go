@@ -33,18 +33,16 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
-	// AuthServiceRegisterProcedure is the fully-qualified name of the AuthService's Register RPC.
-	AuthServiceRegisterProcedure = "/auth.v1.AuthService/Register"
-	// AuthServiceLoginProcedure is the fully-qualified name of the AuthService's Login RPC.
-	AuthServiceLoginProcedure = "/auth.v1.AuthService/Login"
+	// AuthServiceGoogleLoginURLProcedure is the fully-qualified name of the AuthService's
+	// GoogleLoginURL RPC.
+	AuthServiceGoogleLoginURLProcedure = "/auth.v1.AuthService/GoogleLoginURL"
 	// AuthServiceWhoAmIProcedure is the fully-qualified name of the AuthService's WhoAmI RPC.
 	AuthServiceWhoAmIProcedure = "/auth.v1.AuthService/WhoAmI"
 )
 
 // AuthServiceClient is a client for the auth.v1.AuthService service.
 type AuthServiceClient interface {
-	Register(context.Context, *connect.Request[v1.RegisterRequest]) (*connect.Response[v1.RegisterResponse], error)
-	Login(context.Context, *connect.Request[v1.LoginRequest]) (*connect.Response[v1.LoginResponse], error)
+	GoogleLoginURL(context.Context, *connect.Request[v1.GoogleLoginURLRequest]) (*connect.Response[v1.GoogleLoginURLResponse], error)
 	WhoAmI(context.Context, *connect.Request[v1.WhoAmIRequest]) (*connect.Response[v1.WhoAmIResponse], error)
 }
 
@@ -59,16 +57,10 @@ func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 	baseURL = strings.TrimRight(baseURL, "/")
 	authServiceMethods := v1.File_auth_v1_auth_proto.Services().ByName("AuthService").Methods()
 	return &authServiceClient{
-		register: connect.NewClient[v1.RegisterRequest, v1.RegisterResponse](
+		googleLoginURL: connect.NewClient[v1.GoogleLoginURLRequest, v1.GoogleLoginURLResponse](
 			httpClient,
-			baseURL+AuthServiceRegisterProcedure,
-			connect.WithSchema(authServiceMethods.ByName("Register")),
-			connect.WithClientOptions(opts...),
-		),
-		login: connect.NewClient[v1.LoginRequest, v1.LoginResponse](
-			httpClient,
-			baseURL+AuthServiceLoginProcedure,
-			connect.WithSchema(authServiceMethods.ByName("Login")),
+			baseURL+AuthServiceGoogleLoginURLProcedure,
+			connect.WithSchema(authServiceMethods.ByName("GoogleLoginURL")),
 			connect.WithClientOptions(opts...),
 		),
 		whoAmI: connect.NewClient[v1.WhoAmIRequest, v1.WhoAmIResponse](
@@ -82,19 +74,13 @@ func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 
 // authServiceClient implements AuthServiceClient.
 type authServiceClient struct {
-	register *connect.Client[v1.RegisterRequest, v1.RegisterResponse]
-	login    *connect.Client[v1.LoginRequest, v1.LoginResponse]
-	whoAmI   *connect.Client[v1.WhoAmIRequest, v1.WhoAmIResponse]
+	googleLoginURL *connect.Client[v1.GoogleLoginURLRequest, v1.GoogleLoginURLResponse]
+	whoAmI         *connect.Client[v1.WhoAmIRequest, v1.WhoAmIResponse]
 }
 
-// Register calls auth.v1.AuthService.Register.
-func (c *authServiceClient) Register(ctx context.Context, req *connect.Request[v1.RegisterRequest]) (*connect.Response[v1.RegisterResponse], error) {
-	return c.register.CallUnary(ctx, req)
-}
-
-// Login calls auth.v1.AuthService.Login.
-func (c *authServiceClient) Login(ctx context.Context, req *connect.Request[v1.LoginRequest]) (*connect.Response[v1.LoginResponse], error) {
-	return c.login.CallUnary(ctx, req)
+// GoogleLoginURL calls auth.v1.AuthService.GoogleLoginURL.
+func (c *authServiceClient) GoogleLoginURL(ctx context.Context, req *connect.Request[v1.GoogleLoginURLRequest]) (*connect.Response[v1.GoogleLoginURLResponse], error) {
+	return c.googleLoginURL.CallUnary(ctx, req)
 }
 
 // WhoAmI calls auth.v1.AuthService.WhoAmI.
@@ -104,8 +90,7 @@ func (c *authServiceClient) WhoAmI(ctx context.Context, req *connect.Request[v1.
 
 // AuthServiceHandler is an implementation of the auth.v1.AuthService service.
 type AuthServiceHandler interface {
-	Register(context.Context, *connect.Request[v1.RegisterRequest]) (*connect.Response[v1.RegisterResponse], error)
-	Login(context.Context, *connect.Request[v1.LoginRequest]) (*connect.Response[v1.LoginResponse], error)
+	GoogleLoginURL(context.Context, *connect.Request[v1.GoogleLoginURLRequest]) (*connect.Response[v1.GoogleLoginURLResponse], error)
 	WhoAmI(context.Context, *connect.Request[v1.WhoAmIRequest]) (*connect.Response[v1.WhoAmIResponse], error)
 }
 
@@ -116,16 +101,10 @@ type AuthServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
 	authServiceMethods := v1.File_auth_v1_auth_proto.Services().ByName("AuthService").Methods()
-	authServiceRegisterHandler := connect.NewUnaryHandler(
-		AuthServiceRegisterProcedure,
-		svc.Register,
-		connect.WithSchema(authServiceMethods.ByName("Register")),
-		connect.WithHandlerOptions(opts...),
-	)
-	authServiceLoginHandler := connect.NewUnaryHandler(
-		AuthServiceLoginProcedure,
-		svc.Login,
-		connect.WithSchema(authServiceMethods.ByName("Login")),
+	authServiceGoogleLoginURLHandler := connect.NewUnaryHandler(
+		AuthServiceGoogleLoginURLProcedure,
+		svc.GoogleLoginURL,
+		connect.WithSchema(authServiceMethods.ByName("GoogleLoginURL")),
 		connect.WithHandlerOptions(opts...),
 	)
 	authServiceWhoAmIHandler := connect.NewUnaryHandler(
@@ -136,10 +115,8 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 	)
 	return "/auth.v1.AuthService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case AuthServiceRegisterProcedure:
-			authServiceRegisterHandler.ServeHTTP(w, r)
-		case AuthServiceLoginProcedure:
-			authServiceLoginHandler.ServeHTTP(w, r)
+		case AuthServiceGoogleLoginURLProcedure:
+			authServiceGoogleLoginURLHandler.ServeHTTP(w, r)
 		case AuthServiceWhoAmIProcedure:
 			authServiceWhoAmIHandler.ServeHTTP(w, r)
 		default:
@@ -151,12 +128,8 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 // UnimplementedAuthServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedAuthServiceHandler struct{}
 
-func (UnimplementedAuthServiceHandler) Register(context.Context, *connect.Request[v1.RegisterRequest]) (*connect.Response[v1.RegisterResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("auth.v1.AuthService.Register is not implemented"))
-}
-
-func (UnimplementedAuthServiceHandler) Login(context.Context, *connect.Request[v1.LoginRequest]) (*connect.Response[v1.LoginResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("auth.v1.AuthService.Login is not implemented"))
+func (UnimplementedAuthServiceHandler) GoogleLoginURL(context.Context, *connect.Request[v1.GoogleLoginURLRequest]) (*connect.Response[v1.GoogleLoginURLResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("auth.v1.AuthService.GoogleLoginURL is not implemented"))
 }
 
 func (UnimplementedAuthServiceHandler) WhoAmI(context.Context, *connect.Request[v1.WhoAmIRequest]) (*connect.Response[v1.WhoAmIResponse], error) {

@@ -13,10 +13,6 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import { Toaster } from "~/components/ui/sonner";
 
-export async function clientLoader() {
-	return null;
-}
-
 export function Layout({ children }: { children: React.ReactNode }) {
 	return (
 		<html lang="en">

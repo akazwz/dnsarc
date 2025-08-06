@@ -39,6 +39,9 @@ const (
 	// DNSRecordServiceListDNSRecordsProcedure is the fully-qualified name of the DNSRecordService's
 	// ListDNSRecords RPC.
 	DNSRecordServiceListDNSRecordsProcedure = "/dns_record.v1.DNSRecordService/ListDNSRecords"
+	// DNSRecordServiceListDNSRecordsByZoneNameProcedure is the fully-qualified name of the
+	// DNSRecordService's ListDNSRecordsByZoneName RPC.
+	DNSRecordServiceListDNSRecordsByZoneNameProcedure = "/dns_record.v1.DNSRecordService/ListDNSRecordsByZoneName"
 	// DNSRecordServiceGetDNSRecordProcedure is the fully-qualified name of the DNSRecordService's
 	// GetDNSRecord RPC.
 	DNSRecordServiceGetDNSRecordProcedure = "/dns_record.v1.DNSRecordService/GetDNSRecord"
@@ -54,6 +57,7 @@ const (
 type DNSRecordServiceClient interface {
 	CreateDNSRecord(context.Context, *connect.Request[v1.CreateDNSRecordRequest]) (*connect.Response[v1.CreateDNSRecordResponse], error)
 	ListDNSRecords(context.Context, *connect.Request[v1.ListDNSRecordsRequest]) (*connect.Response[v1.ListDNSRecordsResponse], error)
+	ListDNSRecordsByZoneName(context.Context, *connect.Request[v1.ListDNSRecordsByZoneNameRequest]) (*connect.Response[v1.ListDNSRecordsByZoneNameResponse], error)
 	GetDNSRecord(context.Context, *connect.Request[v1.GetDNSRecordRequest]) (*connect.Response[v1.GetDNSRecordResponse], error)
 	UpdateDNSRecord(context.Context, *connect.Request[v1.UpdateDNSRecordRequest]) (*connect.Response[v1.UpdateDNSRecordResponse], error)
 	DeleteDNSRecord(context.Context, *connect.Request[v1.DeleteDNSRecordRequest]) (*connect.Response[v1.DeleteDNSRecordResponse], error)
@@ -82,6 +86,12 @@ func NewDNSRecordServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(dNSRecordServiceMethods.ByName("ListDNSRecords")),
 			connect.WithClientOptions(opts...),
 		),
+		listDNSRecordsByZoneName: connect.NewClient[v1.ListDNSRecordsByZoneNameRequest, v1.ListDNSRecordsByZoneNameResponse](
+			httpClient,
+			baseURL+DNSRecordServiceListDNSRecordsByZoneNameProcedure,
+			connect.WithSchema(dNSRecordServiceMethods.ByName("ListDNSRecordsByZoneName")),
+			connect.WithClientOptions(opts...),
+		),
 		getDNSRecord: connect.NewClient[v1.GetDNSRecordRequest, v1.GetDNSRecordResponse](
 			httpClient,
 			baseURL+DNSRecordServiceGetDNSRecordProcedure,
@@ -105,11 +115,12 @@ func NewDNSRecordServiceClient(httpClient connect.HTTPClient, baseURL string, op
 
 // dNSRecordServiceClient implements DNSRecordServiceClient.
 type dNSRecordServiceClient struct {
-	createDNSRecord *connect.Client[v1.CreateDNSRecordRequest, v1.CreateDNSRecordResponse]
-	listDNSRecords  *connect.Client[v1.ListDNSRecordsRequest, v1.ListDNSRecordsResponse]
-	getDNSRecord    *connect.Client[v1.GetDNSRecordRequest, v1.GetDNSRecordResponse]
-	updateDNSRecord *connect.Client[v1.UpdateDNSRecordRequest, v1.UpdateDNSRecordResponse]
-	deleteDNSRecord *connect.Client[v1.DeleteDNSRecordRequest, v1.DeleteDNSRecordResponse]
+	createDNSRecord          *connect.Client[v1.CreateDNSRecordRequest, v1.CreateDNSRecordResponse]
+	listDNSRecords           *connect.Client[v1.ListDNSRecordsRequest, v1.ListDNSRecordsResponse]
+	listDNSRecordsByZoneName *connect.Client[v1.ListDNSRecordsByZoneNameRequest, v1.ListDNSRecordsByZoneNameResponse]
+	getDNSRecord             *connect.Client[v1.GetDNSRecordRequest, v1.GetDNSRecordResponse]
+	updateDNSRecord          *connect.Client[v1.UpdateDNSRecordRequest, v1.UpdateDNSRecordResponse]
+	deleteDNSRecord          *connect.Client[v1.DeleteDNSRecordRequest, v1.DeleteDNSRecordResponse]
 }
 
 // CreateDNSRecord calls dns_record.v1.DNSRecordService.CreateDNSRecord.
@@ -120,6 +131,11 @@ func (c *dNSRecordServiceClient) CreateDNSRecord(ctx context.Context, req *conne
 // ListDNSRecords calls dns_record.v1.DNSRecordService.ListDNSRecords.
 func (c *dNSRecordServiceClient) ListDNSRecords(ctx context.Context, req *connect.Request[v1.ListDNSRecordsRequest]) (*connect.Response[v1.ListDNSRecordsResponse], error) {
 	return c.listDNSRecords.CallUnary(ctx, req)
+}
+
+// ListDNSRecordsByZoneName calls dns_record.v1.DNSRecordService.ListDNSRecordsByZoneName.
+func (c *dNSRecordServiceClient) ListDNSRecordsByZoneName(ctx context.Context, req *connect.Request[v1.ListDNSRecordsByZoneNameRequest]) (*connect.Response[v1.ListDNSRecordsByZoneNameResponse], error) {
+	return c.listDNSRecordsByZoneName.CallUnary(ctx, req)
 }
 
 // GetDNSRecord calls dns_record.v1.DNSRecordService.GetDNSRecord.
@@ -141,6 +157,7 @@ func (c *dNSRecordServiceClient) DeleteDNSRecord(ctx context.Context, req *conne
 type DNSRecordServiceHandler interface {
 	CreateDNSRecord(context.Context, *connect.Request[v1.CreateDNSRecordRequest]) (*connect.Response[v1.CreateDNSRecordResponse], error)
 	ListDNSRecords(context.Context, *connect.Request[v1.ListDNSRecordsRequest]) (*connect.Response[v1.ListDNSRecordsResponse], error)
+	ListDNSRecordsByZoneName(context.Context, *connect.Request[v1.ListDNSRecordsByZoneNameRequest]) (*connect.Response[v1.ListDNSRecordsByZoneNameResponse], error)
 	GetDNSRecord(context.Context, *connect.Request[v1.GetDNSRecordRequest]) (*connect.Response[v1.GetDNSRecordResponse], error)
 	UpdateDNSRecord(context.Context, *connect.Request[v1.UpdateDNSRecordRequest]) (*connect.Response[v1.UpdateDNSRecordResponse], error)
 	DeleteDNSRecord(context.Context, *connect.Request[v1.DeleteDNSRecordRequest]) (*connect.Response[v1.DeleteDNSRecordResponse], error)
@@ -163,6 +180,12 @@ func NewDNSRecordServiceHandler(svc DNSRecordServiceHandler, opts ...connect.Han
 		DNSRecordServiceListDNSRecordsProcedure,
 		svc.ListDNSRecords,
 		connect.WithSchema(dNSRecordServiceMethods.ByName("ListDNSRecords")),
+		connect.WithHandlerOptions(opts...),
+	)
+	dNSRecordServiceListDNSRecordsByZoneNameHandler := connect.NewUnaryHandler(
+		DNSRecordServiceListDNSRecordsByZoneNameProcedure,
+		svc.ListDNSRecordsByZoneName,
+		connect.WithSchema(dNSRecordServiceMethods.ByName("ListDNSRecordsByZoneName")),
 		connect.WithHandlerOptions(opts...),
 	)
 	dNSRecordServiceGetDNSRecordHandler := connect.NewUnaryHandler(
@@ -189,6 +212,8 @@ func NewDNSRecordServiceHandler(svc DNSRecordServiceHandler, opts ...connect.Han
 			dNSRecordServiceCreateDNSRecordHandler.ServeHTTP(w, r)
 		case DNSRecordServiceListDNSRecordsProcedure:
 			dNSRecordServiceListDNSRecordsHandler.ServeHTTP(w, r)
+		case DNSRecordServiceListDNSRecordsByZoneNameProcedure:
+			dNSRecordServiceListDNSRecordsByZoneNameHandler.ServeHTTP(w, r)
 		case DNSRecordServiceGetDNSRecordProcedure:
 			dNSRecordServiceGetDNSRecordHandler.ServeHTTP(w, r)
 		case DNSRecordServiceUpdateDNSRecordProcedure:
@@ -210,6 +235,10 @@ func (UnimplementedDNSRecordServiceHandler) CreateDNSRecord(context.Context, *co
 
 func (UnimplementedDNSRecordServiceHandler) ListDNSRecords(context.Context, *connect.Request[v1.ListDNSRecordsRequest]) (*connect.Response[v1.ListDNSRecordsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("dns_record.v1.DNSRecordService.ListDNSRecords is not implemented"))
+}
+
+func (UnimplementedDNSRecordServiceHandler) ListDNSRecordsByZoneName(context.Context, *connect.Request[v1.ListDNSRecordsByZoneNameRequest]) (*connect.Response[v1.ListDNSRecordsByZoneNameResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("dns_record.v1.DNSRecordService.ListDNSRecordsByZoneName is not implemented"))
 }
 
 func (UnimplementedDNSRecordServiceHandler) GetDNSRecord(context.Context, *connect.Request[v1.GetDNSRecordRequest]) (*connect.Response[v1.GetDNSRecordResponse], error) {

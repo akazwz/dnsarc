@@ -7,13 +7,14 @@ option go_package = "dnsarc/gen/dns_record/v1;dns_recordv1";
 service DNSRecordService {
   rpc CreateDNSRecord(CreateDNSRecordRequest) returns (CreateDNSRecordResponse) {}
   rpc ListDNSRecords(ListDNSRecordsRequest) returns (ListDNSRecordsResponse) {}
+  rpc ListDNSRecordsByZoneName(ListDNSRecordsByZoneNameRequest) returns (ListDNSRecordsByZoneNameResponse) {}
   rpc GetDNSRecord(GetDNSRecordRequest) returns (GetDNSRecordResponse) {}
   rpc UpdateDNSRecord(UpdateDNSRecordRequest) returns (UpdateDNSRecordResponse) {}
   rpc DeleteDNSRecord(DeleteDNSRecordRequest) returns (DeleteDNSRecordResponse) {}
 }
 
 message CreateDNSRecordRequest {
-  string zone_id = 1;
+  string zone_name = 1;
   string name = 2;
   string type = 3;
   string content = 4;
@@ -41,6 +42,14 @@ message ListDNSRecordsRequest {
 }
 
 message ListDNSRecordsResponse {
+  repeated DNSRecord records = 1;
+}
+
+message ListDNSRecordsByZoneNameRequest {
+  string zone_name = 1;
+}
+
+message ListDNSRecordsByZoneNameResponse {
   repeated DNSRecord records = 1;
 }
 

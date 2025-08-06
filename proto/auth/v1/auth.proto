@@ -4,17 +4,6 @@ package auth.v1;
 
 option go_package = "dnsarc/gen/auth/v1;authv1";
 
-service AuthService {
-  rpc Register(RegisterRequest) returns (RegisterResponse) {}
-  rpc Login(LoginRequest) returns (LoginResponse) {}
-  rpc WhoAmI(WhoAmIRequest) returns (WhoAmIResponse) {}
-}
-
-message RegisterRequest {
-  string email = 1;
-  string password = 2;
-}
-
 message User {
   string id = 1;
   string email = 2;
@@ -23,23 +12,19 @@ message User {
   string updated_at = 5;
 }
 
-message RegisterResponse {
-  User user = 1;
-  string access_token = 2;
-}
+message GoogleLoginURLRequest {}
 
-message LoginRequest {
-  string email = 1;
-  string password = 2;
-}
-
-message LoginResponse {
-  User user = 1;
-  string access_token = 2;
+message GoogleLoginURLResponse {
+  string url = 1;
 }
 
 message WhoAmIRequest {}
 
 message WhoAmIResponse {
   User user = 1;
+}
+
+service AuthService {
+  rpc GoogleLoginURL(GoogleLoginURLRequest) returns (GoogleLoginURLResponse) {}
+  rpc WhoAmI(WhoAmIRequest) returns (WhoAmIResponse) {}
 }

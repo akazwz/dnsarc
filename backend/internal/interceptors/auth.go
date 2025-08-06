@@ -21,8 +21,7 @@ const (
 )
 
 var publicRoutes = []string{
-	authv1connect.AuthServiceLoginProcedure,
-	authv1connect.AuthServiceRegisterProcedure,
+	authv1connect.AuthServiceGoogleLoginURLProcedure,
 }
 
 func NewAuthInterceptor(jwtService *services.JwtService) connect.UnaryInterceptorFunc {

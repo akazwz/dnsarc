@@ -2,8 +2,7 @@ package handlers
 
 import (
 	"context"
-	"encoding/json"
-	"log/slog"
+	"errors"
 
 	"connectrpc.com/connect"
 	"github.com/redis/go-redis/v9"
@@ -26,24 +25,19 @@ func NewZoneHandler(db *gorm.DB, rdb *redis.Client) *ZoneHandler {
 	return &ZoneHandler{db: db, rdb: rdb}
 }
 
-func (h *ZoneHandler) PublishEvent(event event.Event) {
-	ctx := context.Background()
-	slog.Info("publish event", "event", event)
-	json, err := json.Marshal(event)
-	if err != nil {
-		slog.Error("failed to marshal event", "error", err)
-		return
-	}
-	if err := h.rdb.Publish(ctx, "event", string(json)).Err(); err != nil {
-		slog.Error("failed to publish event", "error", err)
-	}
-}
-
 func (h *ZoneHandler) CreateZone(ctx context.Context, req *connect.Request[zonev1.CreateZoneRequest]) (*connect.Response[zonev1.CreateZoneResponse], error) {
 	userID, _ := interceptors.GetUserID(ctx)
 	zoneName, err := publicsuffix.Domain(req.Msg.ZoneName)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+	// 检查 zone name 是否已经有 active 的存在
+	var existsZone models.Zone
+	if err := h.db.Where("zone_name = ? AND is_active = ?", zoneName, true).First(&existsZone).Error; err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+	if existsZone.ID != "" {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("zone name already exists"))
 	}
 	zone := models.Zone{
 		UserID:   userID,
@@ -52,12 +46,6 @@ func (h *ZoneHandler) CreateZone(ctx context.Context, req *connect.Request[zonev
 	if err := h.db.Create(&zone).Error; err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	go func() {
-		h.PublishEvent(event.Event{
-			Type:     event.EventTypeZoneCreate,
-			ZoneName: zoneName,
-		})
-	}()
 	return &connect.Response[zonev1.CreateZoneResponse]{
 		Msg: &zonev1.CreateZoneResponse{
 			Zone: zone.ToProto(),
@@ -112,11 +100,23 @@ func (h *ZoneHandler) DeleteZone(ctx context.Context, req *connect.Request[zonev
 	if err := h.db.Where("user_id = ? AND id = ?", userID, req.Msg.Id).First(&zone).Error; err != nil {
 		return nil, connect.NewError(connect.CodeNotFound, err)
 	}
-	if err := h.db.Delete(&zone).Error; err != nil {
+	// 事务
+	tx := h.db.Begin()
+	if err := tx.Where("user_id = ? AND id = ?", userID, req.Msg.Id).Delete(&zone).Error; err != nil {
+		tx.Rollback()
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
+	if err := tx.Where("user_id = ? AND zone_name = ?", userID, zone.ZoneName).Delete(&models.DNSRecord{}).Error; err != nil {
+		tx.Rollback()
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	// 发布事件
 	go func() {
-		h.PublishEvent(event.Event{
+		event.PublishEvent(h.rdb, event.Event{
 			Type:     event.EventTypeZoneDelete,
 			ZoneName: zone.ZoneName,
 		})

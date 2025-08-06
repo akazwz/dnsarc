@@ -10,29 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file auth/v1/auth.proto.
  */
 export const file_auth_v1_auth: GenFile = /*@__PURE__*/
-  fileDesc("ChJhdXRoL3YxL2F1dGgucHJvdG8SB2F1dGgudjEiMgoPUmVnaXN0ZXJSZXF1ZXN0Eg0KBWVtYWlsGAEgASgJEhAKCHBhc3N3b3JkGAIgASgJIlkKBFVzZXISCgoCaWQYASABKAkSDQoFZW1haWwYAiABKAkSDgoGYXZhdGFyGAMgASgJEhIKCmNyZWF0ZWRfYXQYBCABKAkSEgoKdXBkYXRlZF9hdBgFIAEoCSJFChBSZWdpc3RlclJlc3BvbnNlEhsKBHVzZXIYASABKAsyDS5hdXRoLnYxLlVzZXISFAoMYWNjZXNzX3Rva2VuGAIgASgJIi8KDExvZ2luUmVxdWVzdBINCgVlbWFpbBgBIAEoCRIQCghwYXNzd29yZBgCIAEoCSJCCg1Mb2dpblJlc3BvbnNlEhsKBHVzZXIYASABKAsyDS5hdXRoLnYxLlVzZXISFAoMYWNjZXNzX3Rva2VuGAIgASgJIg8KDVdob0FtSVJlcXVlc3QiLQoOV2hvQW1JUmVzcG9uc2USGwoEdXNlchgBIAEoCzINLmF1dGgudjEuVXNlcjLHAQoLQXV0aFNlcnZpY2USQQoIUmVnaXN0ZXISGC5hdXRoLnYxLlJlZ2lzdGVyUmVxdWVzdBoZLmF1dGgudjEuUmVnaXN0ZXJSZXNwb25zZSIAEjgKBUxvZ2luEhUuYXV0aC52MS5Mb2dpblJlcXVlc3QaFi5hdXRoLnYxLkxvZ2luUmVzcG9uc2UiABI7CgZXaG9BbUkSFi5hdXRoLnYxLldob0FtSVJlcXVlc3QaFy5hdXRoLnYxLldob0FtSVJlc3BvbnNlIgBCG1oZZG5zYXJjL2dlbi9hdXRoL3YxO2F1dGh2MWIGcHJvdG8z");
-
-/**
- * @generated from message auth.v1.RegisterRequest
- */
-export type RegisterRequest = Message<"auth.v1.RegisterRequest"> & {
-  /**
-   * @generated from field: string email = 1;
-   */
-  email: string;
-
-  /**
-   * @generated from field: string password = 2;
-   */
-  password: string;
-};
-
-/**
- * Describes the message auth.v1.RegisterRequest.
- * Use `create(RegisterRequestSchema)` to create a new message.
- */
-export const RegisterRequestSchema: GenMessage<RegisterRequest> = /*@__PURE__*/
-  messageDesc(file_auth_v1_auth, 0);
+  fileDesc("ChJhdXRoL3YxL2F1dGgucHJvdG8SB2F1dGgudjEiWQoEVXNlchIKCgJpZBgBIAEoCRINCgVlbWFpbBgCIAEoCRIOCgZhdmF0YXIYAyABKAkSEgoKY3JlYXRlZF9hdBgEIAEoCRISCgp1cGRhdGVkX2F0GAUgASgJIhcKFUdvb2dsZUxvZ2luVVJMUmVxdWVzdCIlChZHb29nbGVMb2dpblVSTFJlc3BvbnNlEgsKA3VybBgBIAEoCSIPCg1XaG9BbUlSZXF1ZXN0Ii0KDldob0FtSVJlc3BvbnNlEhsKBHVzZXIYASABKAsyDS5hdXRoLnYxLlVzZXIynwEKC0F1dGhTZXJ2aWNlElMKDkdvb2dsZUxvZ2luVVJMEh4uYXV0aC52MS5Hb29nbGVMb2dpblVSTFJlcXVlc3QaHy5hdXRoLnYxLkdvb2dsZUxvZ2luVVJMUmVzcG9uc2UiABI7CgZXaG9BbUkSFi5hdXRoLnYxLldob0FtSVJlcXVlc3QaFy5hdXRoLnYxLldob0FtSVJlc3BvbnNlIgBCG1oZZG5zYXJjL2dlbi9hdXRoL3YxO2F1dGh2MWIGcHJvdG8z");
 
 /**
  * @generated from message auth.v1.User
@@ -69,73 +47,37 @@ export type User = Message<"auth.v1.User"> & {
  * Use `create(UserSchema)` to create a new message.
  */
 export const UserSchema: GenMessage<User> = /*@__PURE__*/
+  messageDesc(file_auth_v1_auth, 0);
+
+/**
+ * @generated from message auth.v1.GoogleLoginURLRequest
+ */
+export type GoogleLoginURLRequest = Message<"auth.v1.GoogleLoginURLRequest"> & {
+};
+
+/**
+ * Describes the message auth.v1.GoogleLoginURLRequest.
+ * Use `create(GoogleLoginURLRequestSchema)` to create a new message.
+ */
+export const GoogleLoginURLRequestSchema: GenMessage<GoogleLoginURLRequest> = /*@__PURE__*/
   messageDesc(file_auth_v1_auth, 1);
 
 /**
- * @generated from message auth.v1.RegisterResponse
+ * @generated from message auth.v1.GoogleLoginURLResponse
  */
-export type RegisterResponse = Message<"auth.v1.RegisterResponse"> & {
+export type GoogleLoginURLResponse = Message<"auth.v1.GoogleLoginURLResponse"> & {
   /**
-   * @generated from field: auth.v1.User user = 1;
+   * @generated from field: string url = 1;
    */
-  user?: User;
-
-  /**
-   * @generated from field: string access_token = 2;
-   */
-  accessToken: string;
+  url: string;
 };
 
 /**
- * Describes the message auth.v1.RegisterResponse.
- * Use `create(RegisterResponseSchema)` to create a new message.
+ * Describes the message auth.v1.GoogleLoginURLResponse.
+ * Use `create(GoogleLoginURLResponseSchema)` to create a new message.
  */
-export const RegisterResponseSchema: GenMessage<RegisterResponse> = /*@__PURE__*/
+export const GoogleLoginURLResponseSchema: GenMessage<GoogleLoginURLResponse> = /*@__PURE__*/
   messageDesc(file_auth_v1_auth, 2);
-
-/**
- * @generated from message auth.v1.LoginRequest
- */
-export type LoginRequest = Message<"auth.v1.LoginRequest"> & {
-  /**
-   * @generated from field: string email = 1;
-   */
-  email: string;
-
-  /**
-   * @generated from field: string password = 2;
-   */
-  password: string;
-};
-
-/**
- * Describes the message auth.v1.LoginRequest.
- * Use `create(LoginRequestSchema)` to create a new message.
- */
-export const LoginRequestSchema: GenMessage<LoginRequest> = /*@__PURE__*/
-  messageDesc(file_auth_v1_auth, 3);
-
-/**
- * @generated from message auth.v1.LoginResponse
- */
-export type LoginResponse = Message<"auth.v1.LoginResponse"> & {
-  /**
-   * @generated from field: auth.v1.User user = 1;
-   */
-  user?: User;
-
-  /**
-   * @generated from field: string access_token = 2;
-   */
-  accessToken: string;
-};
-
-/**
- * Describes the message auth.v1.LoginResponse.
- * Use `create(LoginResponseSchema)` to create a new message.
- */
-export const LoginResponseSchema: GenMessage<LoginResponse> = /*@__PURE__*/
-  messageDesc(file_auth_v1_auth, 4);
 
 /**
  * @generated from message auth.v1.WhoAmIRequest
@@ -148,7 +90,7 @@ export type WhoAmIRequest = Message<"auth.v1.WhoAmIRequest"> & {
  * Use `create(WhoAmIRequestSchema)` to create a new message.
  */
 export const WhoAmIRequestSchema: GenMessage<WhoAmIRequest> = /*@__PURE__*/
-  messageDesc(file_auth_v1_auth, 5);
+  messageDesc(file_auth_v1_auth, 3);
 
 /**
  * @generated from message auth.v1.WhoAmIResponse
@@ -165,27 +107,19 @@ export type WhoAmIResponse = Message<"auth.v1.WhoAmIResponse"> & {
  * Use `create(WhoAmIResponseSchema)` to create a new message.
  */
 export const WhoAmIResponseSchema: GenMessage<WhoAmIResponse> = /*@__PURE__*/
-  messageDesc(file_auth_v1_auth, 6);
+  messageDesc(file_auth_v1_auth, 4);
 
 /**
  * @generated from service auth.v1.AuthService
  */
 export const AuthService: GenService<{
   /**
-   * @generated from rpc auth.v1.AuthService.Register
+   * @generated from rpc auth.v1.AuthService.GoogleLoginURL
    */
-  register: {
+  googleLoginURL: {
     methodKind: "unary";
-    input: typeof RegisterRequestSchema;
-    output: typeof RegisterResponseSchema;
-  },
-  /**
-   * @generated from rpc auth.v1.AuthService.Login
-   */
-  login: {
-    methodKind: "unary";
-    input: typeof LoginRequestSchema;
-    output: typeof LoginResponseSchema;
+    input: typeof GoogleLoginURLRequestSchema;
+    output: typeof GoogleLoginURLResponseSchema;
   },
   /**
    * @generated from rpc auth.v1.AuthService.WhoAmI
