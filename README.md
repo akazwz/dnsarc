@@ -1,7 +1,7 @@
 # DNSARC
 
 <div align="center">
-  <img src="frontend/public/favicon-32.png" alt="DNSARC Logo" width="64" height="64">
+  <img src="frontend/public/icon-192.png" alt="DNSARC Logo" width="64" height="64">
   
   <h3>智能权威DNS服务器</h3>
   <p>现代化的权威DNS解决方案，专为开发者设计</p>
@@ -35,7 +35,7 @@ DNSARC采用现代微服务架构，包含以下核心组件：
 - **DNS服务器** (`dns`) - 权威DNS解析服务
 - **API服务器** (`api`) - Web管理界面后端
 - **数据库** - PostgreSQL存储DNS记录和用户数据
-- **缓存** - Redis提供高速缓存和事件通信
+- **缓存** - Redis提供发布订阅事件通信
 
 ### 前端应用
 - **管理面板** - React Router v7 + TypeScript
@@ -46,11 +46,11 @@ DNSARC采用现代微服务架构，包含以下核心组件：
 
 ### 环境要求
 
-- Go 1.24.5+
-- Node.js 18+
-- PostgreSQL 13+
-- Redis 6+
-- Docker & Docker Compose (可选)
+- Go
+- Node.js
+- PostgreSQL
+- Redis
+- Docker
 
 ### 本地开发
 
