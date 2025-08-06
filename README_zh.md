@@ -3,8 +3,8 @@
 <div align="center">
   <img src="frontend/public/icon-192.png" alt="DNSARC Logo" width="64" height="64">
   
-  <h3>Smart Authoritative DNS Server</h3>
-  <p>Modern authoritative DNS solution designed for developers</p>
+  <h3>智能权威DNS服务器</h3>
+  <p>现代化的权威DNS解决方案，专为开发者设计</p>
   
   <p>
     <img src="https://img.shields.io/badge/Go-1.24.5-blue?logo=go" alt="Go Version">
@@ -15,40 +15,40 @@
   </p>
   
   <p>
-    <a href="README_zh.md">🇨🇳 中文</a> | <strong>🇺🇸 English</strong>
+    <strong>🇨🇳 中文</strong> | <a href="README.md">🇺🇸 English</a>
   </p>
 </div>
 
-## ✨ Features
+## ✨ 特性
 
-- 🚀 **High-Performance Authoritative DNS Server** - Built with Go, supports UDP/TCP protocols
-- 🌐 **Modern Web Management Interface** - Intuitive admin panel built with React + TypeScript
-- 🔐 **Google OAuth Authentication** - Secure user authentication and authorization system
-- ⚡ **Smart Caching System** - Redis + in-memory multi-level caching for ultra-fast response
-- 🎯 **Bloom Filter Optimization** - Efficient domain existence checking
-- 📡 **gRPC API** - Modern API design based on Protocol Buffers
-- 🐳 **Containerized Deployment** - Complete Docker and Kubernetes support
-- 📊 **Real-time Event System** - Real-time data synchronization via Redis pub/sub
-- 🛡️ **Security Protection** - JWT authentication and request interceptors
+- 🚀 **高性能权威DNS服务器** - 基于Go语言开发，支持UDP/TCP协议
+- 🌐 **现代化Web管理界面** - React + TypeScript构建的直观管理面板
+- 🔐 **Google OAuth认证** - 安全的用户认证和授权系统
+- ⚡ **智能缓存系统** - Redis + 内存多级缓存，极速响应
+- 🎯 **布隆过滤器优化** - 高效的域名存在性检查
+- 📡 **gRPC API** - 基于Protocol Buffers的现代化API设计
+- 🐳 **容器化部署** - 完整的Docker和Kubernetes支持
+- 📊 **实时事件系统** - Redis发布订阅的实时数据同步
+- 🛡️ **安全防护** - JWT认证和请求拦截器
 
-## 🏗️ Architecture
+## 🏗️ 架构
 
-DNSARC adopts modern microservice architecture with the following core components:
+DNSARC采用现代微服务架构，包含以下核心组件：
 
-### Backend Services
-- **DNS Server** (`dns`) - Authoritative DNS resolution service
-- **API Server** (`api`) - Backend for web management interface
-- **Database** - PostgreSQL for storing DNS records and user data
-- **Cache** - Redis for pub/sub event communication
+### 后端服务
+- **DNS服务器** (`dns`) - 权威DNS解析服务
+- **API服务器** (`api`) - Web管理界面后端
+- **数据库** - PostgreSQL存储DNS记录和用户数据
+- **缓存** - Redis提供发布订阅事件通信
 
-### Frontend Application
-- **Admin Panel** - React Router v7 + TypeScript
-- **UI Components** - Radix UI + Tailwind CSS
-- **State Management** - Zustand + React Query
+### 前端应用
+- **管理面板** - React Router v7 + TypeScript
+- **UI组件** - Radix UI + Tailwind CSS
+- **状态管理** - Zustand + React Query
 
-## 🚀 Quick Start
+## 🚀 快速开始
 
-### Requirements
+### 环境要求
 
 - Go
 - Node.js
@@ -56,20 +56,20 @@ DNSARC adopts modern microservice architecture with the following core component
 - Redis
 - Docker
 
-### Local Development
+### 本地开发
 
-1. **Clone Repository**
+1. **克隆仓库**
 ```bash
 git clone https://github.com/akazwz/dnsarc.git
 cd dnsarc
 ```
 
-2. **Start Backend Services**
+2. **启动后端服务**
 ```bash
-# Enter backend directory
+# 进入后端目录
 cd backend
 
-# Set environment variables
+# 设置环境变量
 export DATABASE_URL="postgres://user:password@localhost/dnsarc?sslmode=disable"
 export REDIS_URL="redis://localhost:6379"
 export JWT_SECRET="your-jwt-secret"
@@ -78,77 +78,77 @@ export GOOGLE_CLIENT_SECRET="your-google-client-secret"
 export NS1="ns1.yourdomain.com"
 export NS2="ns2.yourdomain.com"
 
-# Start API server
+# 启动API服务器
 go run . api
 
-# Start DNS server
+# 启动DNS服务器
 go run . dns
 ```
 
-3. **Start Frontend Application**
+3. **启动前端应用**
 ```bash
-# Enter frontend directory
+# 进入前端目录
 cd frontend
 
-# Install dependencies
+# 安装依赖
 pnpm install
 
-# Start development server
+# 启动开发服务器
 pnpm dev
 ```
 
-## 📦 Deployment
+## 📦 部署
 
-### Kubernetes Deployment
+### Kubernetes部署
 
-1. **Create Configuration Secret**
+1. **创建配置密钥**
 ```bash
-# Create environment configuration file
+# 创建环境变量配置文件
 cp backend/.env.example backend/.env
-# Edit .env file with actual configuration
+# 编辑 .env 文件，填入实际配置
 
-# Create Kubernetes secret
+# 创建Kubernetes密钥
 make secret
 ```
 
-2. **Deploy Services**
+2. **部署服务**
 ```bash
-# Deploy backend services
+# 部署后端服务
 make deploy
 
-# Deploy frontend service
+# 部署前端服务
 make deploy-frontend
 ```
 
-3. **Update Services**
+3. **更新服务**
 ```bash
-# Update backend
+# 更新后端
 make update
 
-# Update frontend
+# 更新前端
 make update-frontend
 ```
 
-### Build and Push Images
+### 构建和推送镜像
 
 ```bash
-# Build backend image
+# 构建后端镜像
 make build
 
-# Push backend image
+# 推送后端镜像
 make push
 
-# Push frontend image
+# 推送前端镜像
 make push-frontend
 ```
 
-## 🔧 Configuration
+## 🔧 配置
 
-### Environment Variables
+### 环境变量
 
-#### Backend Configuration
+#### 后端配置
 ```bash
-# Database
+# 数据库
 DATABASE_URL=postgres://user:password@localhost/dnsarc?sslmode=disable
 
 # Redis
@@ -162,20 +162,20 @@ GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 GOOGLE_REDIRECT_URL=http://localhost:8080/auth/google/callback
 
-# DNS Settings
+# DNS设置
 NS1=ns1.yourdomain.com
 NS2=ns2.yourdomain.com
 MBOX=admin.yourdomain.com
 
-# Frontend URL
+# 前端URL
 FRONTEND_URL=http://localhost:5173
 ```
 
-#### Frontend Configuration
-Frontend configuration via environment variables or build-time config:
+#### 前端配置
+前端配置通过环境变量或构建时配置：
 
 ```bash
-# API Endpoint
+# API端点
 VITE_API_URL=http://localhost:8080
 ```
 
@@ -237,34 +237,34 @@ dnsarc/
 └── proto/                 # Protocol Buffers定义
 ```
 
-## 🤝 Contributing
+## 🤝 贡献
 
-Contributions are welcome! Please follow these steps:
+欢迎贡献代码！请遵循以下步骤：
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Create a Pull Request
+1. Fork本仓库
+2. 创建特性分支 (`git checkout -b feature/amazing-feature`)
+3. 提交更改 (`git commit -m 'Add amazing feature'`)
+4. 推送到分支 (`git push origin feature/amazing-feature`)
+5. 创建Pull Request
 
-## 📄 License
+## 📄 许可证
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+本项目采用MIT许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
 
-## 🙏 Acknowledgments
+## 🙏 致谢
 
-- [miekg/dns](https://github.com/miekg/dns) - Go DNS library
-- [Connect](https://connectrpc.com/) - Modern RPC framework
-- [React Router](https://reactrouter.com/) - React routing
-- [Radix UI](https://www.radix-ui.com/) - Accessible UI components
+- [miekg/dns](https://github.com/miekg/dns) - Go DNS库
+- [Connect](https://connectrpc.com/) - 现代化RPC框架
+- [React Router](https://reactrouter.com/) - React路由
+- [Radix UI](https://www.radix-ui.com/) - 无障碍UI组件
 
-## 📞 Support
+## 📞 支持
 
-If you encounter issues or have questions:
+如果你遇到问题或有疑问：
 
-- Create an [Issue](https://github.com/akazwz/dnsarc/issues)
-- Check the [Documentation](https://github.com/akazwz/dnsarc/wiki)
-- Contact maintainers
+- 创建 [Issue](https://github.com/akazwz/dnsarc/issues)
+- 查看 [文档](https://github.com/akazwz/dnsarc/wiki)
+- 联系维护者
 
 ---
 
