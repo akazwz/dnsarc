@@ -26,6 +26,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				{children}
 				<ScrollRestoration />
 				<Scripts />
+				<script
+					defer
+					src="https://u.pexni.com/script.js"
+					data-website-id="c641d9b6-00ca-4fab-a62d-c984aae51aa2"
+				/>
 			</body>
 		</html>
 	);

@@ -13,7 +13,6 @@
     <img src="https://img.shields.io/badge/Docker-Ready-blue?logo=docker" alt="Docker">
     <img src="https://img.shields.io/badge/Kubernetes-Ready-blue?logo=kubernetes" alt="Kubernetes">
     <img src="https://img.shields.io/badge/Performance-⚡%20Fast-brightgreen" alt="Performance">
-    <img src="https://img.shields.io/badge/Status-🚀%20Production%20Ready-success" alt="Status">
     <img src="https://img.shields.io/github/stars/akazwz/dnsarc?style=social" alt="GitHub stars">
   </p>
   
@@ -21,15 +20,6 @@
     <a href="README_zh.md">🇨🇳 中文</a> | <strong>🇺🇸 English</strong>
   </p>
 </div>
-
-## 📸 Demo
-
-<div align="center">
-  <img src="https://via.placeholder.com/800x400/1a1a1a/ffffff?text=DNSARC+Dashboard+Demo" alt="DNSARC Dashboard" width="80%">
-  <p><em>Modern DNS management interface with real-time monitoring</em></p>
-</div>
-
-> 🔥 **Try it now**: [Live Demo](https://demo.dnsarc.com) | [Quick Start in 30 seconds](#quick-start) | ⭐ [Star us on GitHub](https://github.com/akazwz/dnsarc)
 
 ## ✨ Why Choose DNSARC?
 
