@@ -12,6 +12,7 @@ import (
 	"sync"
 	"syscall"
 	"time"
+	"unicode/utf8"
 
 	"github.com/bits-and-blooms/bloom/v3"
 	"github.com/miekg/dns"
@@ -20,6 +21,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/samber/lo"
 	"github.com/weppos/publicsuffix-go/publicsuffix"
+	"golang.org/x/net/idna"
 	"gorm.io/gorm"
 
 	"dnsarc/internal/database"
@@ -148,6 +150,7 @@ func (s *Server) Start() error {
 		name := firstQuestion.Name
 		name = strings.TrimSuffix(name, ".")
 		name = strings.ToLower(name)
+		name, err := idna.ToASCII(name)
 		slog.Info("name", "name", name)
 		// 提取 zone（获取顶级域名）
 		zoneName, err := publicsuffix.Domain(name)
@@ -162,11 +165,19 @@ func (s *Server) Start() error {
 		}
 		if err != nil {
 			if firstQuestion.Qtype == dns.TypeTXT {
-				prompt := firstQuestion.Name
+				prompt, err := idna.ToUnicode(firstQuestion.Name)
+				if err != nil {
+					slog.Error("failed to convert name to Unicode", "error", err, "name", firstQuestion.Name)
+					m.Rcode = dns.RcodeServerFailure
+					if err := w.WriteMsg(m); err != nil {
+						slog.Error("failed to write response", "error", err)
+					}
+					return
+				}
 				slog.Info("prompt", "prompt", prompt)
 				response, err := s.openaiClient.Responses.New(context.Background(), responses.ResponseNewParams{
 					Model:        "gpt-4.1-mini",
-					Instructions: openai.String("You are a helpful assistant that can answer questions, and only output plain text."),
+					Instructions: openai.String("You are a helpful assistant that can answer questions, and only output plain text. only output English text."),
 					Input: responses.ResponseNewParamsInputUnion{
 						OfString: openai.String(prompt),
 					},
@@ -182,9 +193,7 @@ func (s *Server) Start() error {
 				responseText := response.OutputText()
 				slog.Info("response", "response", responseText)
 
-				// 将长文本分割成多个不超过255字节的字符串
 				txtStrings := splitTXTRecord(responseText)
-
 				rr := &dns.TXT{
 					Hdr: dns.RR_Header{
 						Name:   firstQuestion.Name,
@@ -435,24 +444,27 @@ func splitTXTRecord(text string) []string {
 	const maxLength = 255
 	var result []string
 
-	// 将文本转换为字节以准确计算长度
-	textBytes := []byte(text)
-
-	for len(textBytes) > 0 {
-		// 确定这一段的长度
-		chunkSize := min(maxLength, len(textBytes))
-
-		// 如果不是最后一段且会在UTF-8字符中间切断，往前调整
-		if chunkSize == maxLength && len(textBytes) > maxLength {
-			// 向前查找有效的UTF-8边界
-			for chunkSize > 0 && (textBytes[chunkSize]&0xC0) == 0x80 {
-				chunkSize--
-			}
+	for len(text) > 0 {
+		if len(text) <= maxLength {
+			// 剩余文本不超过限制，直接添加
+			result = append(result, text)
+			break
 		}
 
-		// 提取这一段并添加到结果中
-		result = append(result, string(textBytes[:chunkSize]))
-		textBytes = textBytes[chunkSize:]
+		// 找到最大的有效UTF-8边界
+		cutPoint := maxLength
+		for cutPoint > 0 && !utf8.ValidString(text[:cutPoint]) {
+			cutPoint--
+		}
+
+		// 如果找不到有效边界，至少取一个字符
+		if cutPoint == 0 {
+			_, size := utf8.DecodeRuneInString(text)
+			cutPoint = size
+		}
+
+		result = append(result, text[:cutPoint])
+		text = text[cutPoint:]
 	}
 
 	return result
