@@ -57,6 +57,16 @@ spec:
                 secretKeyRef:
                   name: dnsarc-config
                   key: MBOX
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: dnsarc-config
+                  key: OPENAI_API_KEY
+            - name: OPENAI_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: dnsarc-config
+                  key: OPENAI_BASE_URL
           securityContext:
             capabilities:
               add:

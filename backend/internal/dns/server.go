@@ -15,6 +15,8 @@ import (
 
 	"github.com/bits-and-blooms/bloom/v3"
 	"github.com/miekg/dns"
+	"github.com/openai/openai-go"
+	"github.com/openai/openai-go/responses"
 	"github.com/redis/go-redis/v9"
 	"github.com/samber/lo"
 	"github.com/weppos/publicsuffix-go/publicsuffix"
@@ -35,6 +37,8 @@ type Server struct {
 
 	pendingRebuilds int
 	rebuildTimer    *time.Timer
+
+	openaiClient openai.Client
 }
 
 type Config struct {
@@ -85,13 +89,15 @@ func NewServer() *Server {
 		}
 		slog.Info("bloom filter initialized", "zone_names", len(zoneNames))
 	}()
+	openaiClient := openai.NewClient()
 	return &Server{
-		db:          db,
-		rdb:         rdb,
-		config:      config,
-		cache:       cache,
-		bloomFilter: bloomFilter,
-		bloomMu:     sync.Mutex{},
+		db:           db,
+		rdb:          rdb,
+		config:       config,
+		cache:        cache,
+		bloomFilter:  bloomFilter,
+		bloomMu:      sync.Mutex{},
+		openaiClient: openaiClient,
 	}
 }
 
@@ -134,14 +140,46 @@ func (s *Server) Start() error {
 		}()
 
 		// 获取 domain
-		name := r.Question[0].Name
-		name = strings.TrimSuffix(name, ".")
-		name = strings.ToLower(name)
+		firstQuestion := r.Question[0]
 
 		// 提取Zone（获取顶级域名）
-		zoneName, err := publicsuffix.Domain(name)
+		zoneName, err := publicsuffix.Domain(firstQuestion.Name)
 		if err != nil {
-			slog.Error("failed to get zone", "error", err, "name", name)
+			if firstQuestion.Qtype == dns.TypeTXT {
+				// 进行 AI
+				prompt := firstQuestion.Name
+				slog.Info("prompt", "prompt", prompt)
+				response, err := s.openaiClient.Responses.New(context.Background(), responses.ResponseNewParams{
+					Model:        "gpt-4.1-mini",
+					Instructions: openai.String("You are a helpful assistant that can answer questions, and only output plain text."),
+					Input: responses.ResponseNewParamsInputUnion{
+						OfString: openai.String(prompt),
+					},
+				})
+				if err != nil {
+					slog.Error("failed to create response", "error", err)
+					m.Rcode = dns.RcodeServerFailure
+					if err := w.WriteMsg(m); err != nil {
+						slog.Error("failed to write response", "error", err)
+					}
+				}
+				slog.Info("response", "response", response.OutputText())
+				rr := &dns.TXT{
+					Hdr: dns.RR_Header{
+						Name:   firstQuestion.Name,
+						Rrtype: dns.TypeTXT,
+						Class:  dns.ClassINET,
+						Ttl:    3600,
+					},
+					Txt: []string{response.OutputText()},
+				}
+				m.Answer = append(m.Answer, rr)
+				if err := w.WriteMsg(m); err != nil {
+					slog.Error("failed to write response", "error", err)
+				}
+				return
+			}
+			slog.Error("failed to get zone", "error", err, "name", firstQuestion.Name)
 			m.Rcode = dns.RcodeNameError
 			if err := w.WriteMsg(m); err != nil {
 				slog.Error("failed to write response", "error", err)
