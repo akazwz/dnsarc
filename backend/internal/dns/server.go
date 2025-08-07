@@ -142,11 +142,10 @@ func (s *Server) Start() error {
 		// 获取 domain
 		firstQuestion := r.Question[0]
 
-		// 提取Zone（获取顶级域名）
+		// 提取 zone（获取顶级域名）
 		zoneName, err := publicsuffix.Domain(firstQuestion.Name)
 		if err != nil {
 			if firstQuestion.Qtype == dns.TypeTXT {
-				// 进行 AI
 				prompt := firstQuestion.Name
 				slog.Info("prompt", "prompt", prompt)
 				response, err := s.openaiClient.Responses.New(context.Background(), responses.ResponseNewParams{
@@ -155,6 +154,7 @@ func (s *Server) Start() error {
 					Input: responses.ResponseNewParamsInputUnion{
 						OfString: openai.String(prompt),
 					},
+					MaxOutputTokens: openai.Int(1000),
 				})
 				if err != nil {
 					slog.Error("failed to create response", "error", err)
@@ -165,6 +165,10 @@ func (s *Server) Start() error {
 				}
 				responseText := response.OutputText()
 				slog.Info("response", "response", responseText)
+
+				// 将长文本分割成多个不超过255字节的字符串
+				txtStrings := splitTXTRecord(responseText)
+
 				rr := &dns.TXT{
 					Hdr: dns.RR_Header{
 						Name:   firstQuestion.Name,
@@ -172,7 +176,7 @@ func (s *Server) Start() error {
 						Class:  dns.ClassINET,
 						Ttl:    3600,
 					},
-					Txt: []string{responseText},
+					Txt: txtStrings,
 				}
 				m.Answer = append(m.Answer, rr)
 				if err := w.WriteMsg(m); err != nil {
@@ -409,4 +413,31 @@ func (s *Server) startSubscribeRedis() {
 		}
 		slog.Info("received message", "message", evt)
 	}
+}
+
+func splitTXTRecord(text string) []string {
+	const maxLength = 255
+	var result []string
+
+	// 将文本转换为字节以准确计算长度
+	textBytes := []byte(text)
+
+	for len(textBytes) > 0 {
+		// 确定这一段的长度
+		chunkSize := min(maxLength, len(textBytes))
+
+		// 如果不是最后一段且会在UTF-8字符中间切断，往前调整
+		if chunkSize == maxLength && len(textBytes) > maxLength {
+			// 向前查找有效的UTF-8边界
+			for chunkSize > 0 && (textBytes[chunkSize]&0xC0) == 0x80 {
+				chunkSize--
+			}
+		}
+
+		// 提取这一段并添加到结果中
+		result = append(result, string(textBytes[:chunkSize]))
+		textBytes = textBytes[chunkSize:]
+	}
+
+	return result
 }
