@@ -51,6 +51,10 @@ type Config struct {
 	Host        string
 }
 
+var BLACK_LIST_ZONE = []string{
+	"version.bind",
+}
+
 func NewServer() *Server {
 	config := &Config{
 		DatabaseURL: os.Getenv("DATABASE_URL"),
@@ -87,7 +91,7 @@ func NewServer() *Server {
 		for _, zoneName := range zoneNames {
 			bloomFilter.AddString(zoneName)
 		}
-		slog.Info("bloom filter initialized", "zone_names", len(zoneNames))
+		slog.Info("bloom filter initialized", "zone_names", zoneNames)
 	}()
 	openaiClient := openai.NewClient()
 	return &Server{
@@ -141,9 +145,21 @@ func (s *Server) Start() error {
 
 		// 获取 domain
 		firstQuestion := r.Question[0]
-
+		name := firstQuestion.Name
+		name = strings.TrimSuffix(name, ".")
+		name = strings.ToLower(name)
+		slog.Info("name", "name", name)
 		// 提取 zone（获取顶级域名）
-		zoneName, err := publicsuffix.Domain(firstQuestion.Name)
+		zoneName, err := publicsuffix.Domain(name)
+		slog.Info("zoneName", "zoneName", zoneName)
+		zoneName = strings.TrimSuffix(zoneName, ".")
+		if lo.Contains(BLACK_LIST_ZONE, zoneName) {
+			m.Rcode = dns.RcodeNameError
+			if err := w.WriteMsg(m); err != nil {
+				slog.Error("failed to write response", "error", err)
+			}
+			return
+		}
 		if err != nil {
 			if firstQuestion.Qtype == dns.TypeTXT {
 				prompt := firstQuestion.Name
