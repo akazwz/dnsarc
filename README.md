@@ -181,62 +181,62 @@ Frontend configuration via environment variables or build-time config:
 VITE_API_URL=http://localhost:8080
 ```
 
-## 📚 API文档
+## 📚 API Documentation
 
-DNSARC使用gRPC和Protocol Buffers定义API，主要服务包括：
+DNSARC uses gRPC and Protocol Buffers to define APIs. Main services include:
 
-### 认证服务 (AuthService)
-- `GoogleLoginURL` - 获取Google登录URL
-- `WhoAmI` - 获取当前用户信息
+### Authentication Service (AuthService)
+- `GoogleLoginURL` - Get Google login URL
+- `WhoAmI` - Get current user information
 
-### 域名区域服务 (ZoneService)
-- `CreateZone` - 创建DNS区域
-- `ListZones` - 列出用户的DNS区域
-- `GetZone` - 获取指定区域信息
-- `UpdateZone` - 更新区域设置
-- `DeleteZone` - 删除区域
+### Zone Service (ZoneService)
+- `CreateZone` - Create DNS zone
+- `ListZones` - List user's DNS zones
+- `GetZone` - Get specific zone information
+- `UpdateZone` - Update zone settings
+- `DeleteZone` - Delete zone
 
-### DNS记录服务 (DNSRecordService)
-- `CreateDNSRecord` - 创建DNS记录
-- `ListDNSRecords` - 列出DNS记录
-- `UpdateDNSRecord` - 更新DNS记录
-- `DeleteDNSRecord` - 删除DNS记录
+### DNS Record Service (DNSRecordService)
+- `CreateDNSRecord` - Create DNS record
+- `ListDNSRecords` - List DNS records
+- `UpdateDNSRecord` - Update DNS record
+- `DeleteDNSRecord` - Delete DNS record
 
-## 🛠️ 开发
+## 🛠️ Development
 
-### 生成代码
+### Code Generation
 
 ```bash
-# 生成protobuf代码
+# Generate protobuf code
 make gen
 ```
 
-### 代码检查
+### Code Linting
 
 ```bash
-# Go代码检查
+# Go code linting
 make lint
 ```
 
-### 项目结构
+### Project Structure
 
 ```
 dnsarc/
-├── backend/                 # Go后端服务
-│   ├── cmd/                # 命令行入口
-│   ├── internal/           # 内部包
-│   │   ├── api/           # API服务器
-│   │   ├── dns/           # DNS服务器
-│   │   ├── handlers/      # gRPC处理器
-│   │   ├── models/        # 数据模型
-│   │   └── services/      # 业务服务
-│   ├── k8s/               # Kubernetes配置
-│   └── gen/               # 生成的代码
-├── frontend/               # React前端应用
-│   ├── app/               # 应用源码
-│   ├── gen/               # 生成的TS代码
-│   └── k8s/               # K8s配置
-└── proto/                 # Protocol Buffers定义
+├── backend/                 # Go backend services
+│   ├── cmd/                # Command line entry points
+│   ├── internal/           # Internal packages
+│   │   ├── api/           # API server
+│   │   ├── dns/           # DNS server
+│   │   ├── handlers/      # gRPC handlers
+│   │   ├── models/        # Data models
+│   │   └── services/      # Business services
+│   ├── k8s/               # Kubernetes configurations
+│   └── gen/               # Generated code
+├── frontend/               # React frontend application
+│   ├── app/               # Application source code
+│   ├── gen/               # Generated TypeScript code
+│   └── k8s/               # Kubernetes configurations
+└── proto/                 # Protocol Buffers definitions
 ```
 
 ## 🤝 Contributing
