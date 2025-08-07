@@ -163,7 +163,8 @@ func (s *Server) Start() error {
 						slog.Error("failed to write response", "error", err)
 					}
 				}
-				slog.Info("response", "response", response.OutputText())
+				responseText := response.OutputText()
+				slog.Info("response", "response", responseText)
 				rr := &dns.TXT{
 					Hdr: dns.RR_Header{
 						Name:   firstQuestion.Name,
@@ -171,7 +172,7 @@ func (s *Server) Start() error {
 						Class:  dns.ClassINET,
 						Ttl:    3600,
 					},
-					Txt: []string{response.OutputText()},
+					Txt: []string{responseText},
 				}
 				m.Answer = append(m.Answer, rr)
 				if err := w.WriteMsg(m); err != nil {
