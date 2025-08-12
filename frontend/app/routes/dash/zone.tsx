@@ -68,6 +68,9 @@ const schema = z.object({
 		.number()
 		.min(300, { message: "TTL must be at least 300" })
 		.max(86400, { message: "TTL must be at most 86400" }),
+	weight: z.number().min(0, { message: "Weight must be at least 0" }).max(100, {
+		message: "Weight must be at most 100",
+	}),
 });
 
 const editSchema = z.object({
@@ -80,6 +83,9 @@ const editSchema = z.object({
 		.number()
 		.min(300, { message: "TTL must be at least 300" })
 		.max(86400, { message: "TTL must be at most 86400" }),
+	weight: z.number().min(0, { message: "Weight must be at least 0" }).max(100, {
+		message: "Weight must be at most 100",
+	}),
 });
 
 export default function Zone({ params }: Route.ComponentProps) {
@@ -97,6 +103,7 @@ export default function Zone({ params }: Route.ComponentProps) {
 			type: "A",
 			content: "",
 			ttl: 300,
+			weight: 0,
 		},
 	});
 
@@ -106,6 +113,7 @@ export default function Zone({ params }: Route.ComponentProps) {
 			id: "",
 			content: "",
 			ttl: 300,
+			weight: 0,
 		},
 	});
 
@@ -147,6 +155,7 @@ export default function Zone({ params }: Route.ComponentProps) {
 				id: values.id,
 				content: values.content,
 				ttl: values.ttl,
+				weight: values.weight,
 			});
 			return resp.record;
 		},
@@ -296,6 +305,27 @@ export default function Zone({ params }: Route.ComponentProps) {
 										</FormItem>
 									)}
 								/>
+								<FormField
+									control={form.control}
+									name="weight"
+									render={({ field }) => (
+										<FormItem className="my-4">
+											<FormLabel>Weight</FormLabel>
+											<FormControl>
+												<Input
+													value={field.value}
+													onChange={(e) =>
+														field.onChange(Number(e.target.value))
+													}
+													onBlur={field.onBlur}
+													name={field.name}
+													placeholder="0"
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
 								<DialogFooter>
 									<DialogClose asChild ref={dialogCloseRef}>
 										<Button type="button" variant="outline">
@@ -331,7 +361,8 @@ export default function Zone({ params }: Route.ComponentProps) {
 									<div className="flex-1 flex flex-col gap-2">
 										<div className="flex items-center gap-4">
 											<Badge variant="default">{record.type}</Badge>
-											<Badge variant="outline">{record.ttl}</Badge>
+											<Badge variant="outline">TTL: {record.ttl}</Badge>
+											<Badge variant="outline">Weight: {record.weight}</Badge>
 										</div>
 										<div className="space-y-1">
 											<div>
@@ -364,6 +395,7 @@ export default function Zone({ params }: Route.ComponentProps) {
 														id: record.id,
 														content: record.content,
 														ttl: record.ttl,
+														weight: record.weight,
 													});
 												} else {
 													setEditingRecord(null);
@@ -440,6 +472,26 @@ export default function Zone({ params }: Route.ComponentProps) {
 																		/>
 																	</FormControl>
 																	<FormMessage />
+																</FormItem>
+															)}
+														/>
+														<FormField
+															control={editForm.control}
+															name="weight"
+															render={({ field }) => (
+																<FormItem className="my-4">
+																	<FormLabel>Weight</FormLabel>
+																	<FormControl>
+																		<Input
+																			value={field.value}
+																			onChange={(e) =>
+																				field.onChange(Number(e.target.value))
+																			}
+																			onBlur={field.onBlur}
+																			name={field.name}
+																			placeholder="0"
+																		/>
+																	</FormControl>
 																</FormItem>
 															)}
 														/>

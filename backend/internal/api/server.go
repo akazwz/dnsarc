@@ -241,7 +241,7 @@ func (s *Server) setupRoutes(r chi.Router) {
 		}
 		// 生成 token
 		jwtService := s.jwtService()
-		token, err := jwtService.GenerateToken(user.ID, time.Hour*24)
+		token, err := jwtService.GenerateToken(user.ID, time.Hour*24*30)
 		if err != nil {
 			slog.Error("failed to generate token", "error", err)
 			w.WriteHeader(http.StatusInternalServerError)

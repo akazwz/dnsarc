@@ -19,6 +19,7 @@ message CreateDNSRecordRequest {
   string type = 3;
   string content = 4;
   int32 ttl = 5;
+  int32 weight = 6;
 }
 
 message DNSRecord {
@@ -28,9 +29,10 @@ message DNSRecord {
   string name = 4;
   string type = 5;
   string content = 6;
-  int32 ttl = 7;
-  string created_at = 8;
-  string updated_at = 9;
+  int32 weight = 7;
+  int32 ttl = 8;
+  string created_at = 9;
+  string updated_at = 10;
 }
 
 message CreateDNSRecordResponse {
@@ -67,6 +69,7 @@ message UpdateDNSRecordRequest {
   string type = 3;
   string content = 4;
   int32 ttl = 5;
+  int32 weight = 6;
 }
 
 message UpdateDNSRecordResponse {

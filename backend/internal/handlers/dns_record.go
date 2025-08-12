@@ -61,6 +61,7 @@ func (h *DNSRecordHandler) CreateDNSRecord(ctx context.Context, req *connect.Req
 		Type:     req.Msg.Type,
 		Content:  req.Msg.Content,
 		TTL:      int(req.Msg.Ttl),
+		Weight:   int(req.Msg.Weight),
 	}
 	if err := h.db.Create(&record).Error; err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
@@ -139,6 +140,9 @@ func (h *DNSRecordHandler) UpdateDNSRecord(ctx context.Context, req *connect.Req
 	}
 	if req.Msg.Ttl != 0 {
 		updateMap["ttl"] = int(req.Msg.Ttl)
+	}
+	if req.Msg.Weight != 0 {
+		updateMap["weight"] = int(req.Msg.Weight)
 	}
 	if err := h.db.Model(&record).Updates(updateMap).Error; err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)

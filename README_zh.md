@@ -32,16 +32,38 @@
 - 🔄 **实时更新** - DNS变更瞬间同步到整个基础设施
 - 🛠️ **生产就绪** - Docker容器、健康检查、监控，一应俱全
 - 💰 **开源免费** - 无厂商锁定，按需定制
+- ⚖️ **智能负载均衡** - 基于权重的流量分配与自动故障转移
+- 🔗 **CNAME拉平** - 支持APEX域名CNAME记录的自动解析
+
+## 🎯 核心特性
+
+### 🌐 高级DNS功能
+- **基于权重的负载均衡**: 根据可配置权重在多个服务器间分配流量
+- **CNAME拉平**: 支持APEX域名的CNAME记录并自动解析为A记录
+- **多种记录类型**: 支持A、AAAA、CNAME、MX、TXT、NS、SOA和CAA记录
+- **实时更新**: 通过Redis发布订阅实现DNS变更的即时传播
+
+### ⚡ 性能与可靠性
+- **智能缓存**: Redis和内存存储的多级缓存系统
+- **布隆过滤器**: 超快速的域名区域存在性检查
+- **加权选择**: 基于自定义权重的智能流量分配
+- **自动故障转移**: 具备健康感知的DNS响应
+
+### 🔧 管理与监控
+- **现代化Web界面**: 直观的React管理界面
+- **RESTful API**: 基于gRPC的完整自动化API
+- **实时监控**: 实时DNS查询跟踪和分析
+- **用户管理**: Google SSO集成和基于角色的访问控制
 
 ## 🏗️ 架构
 
 DNSARC采用现代微服务架构，包含以下核心组件：
 
 ### 后端服务
-- **DNS服务器** (`dns`) - 权威DNS解析服务
+- **DNS服务器** (`dns`) - 具备负载均衡和CNAME拉平功能的权威DNS解析服务
 - **API服务器** (`api`) - Web管理界面后端
 - **数据库** - PostgreSQL存储DNS记录和用户数据
-- **缓存** - Redis提供发布订阅事件通信
+- **缓存** - Redis提供发布订阅事件通信和缓存
 
 ### 前端应用
 - **管理面板** - React Router v7 + TypeScript
@@ -98,6 +120,45 @@ pnpm install
 # 启动开发服务器
 pnpm dev
 ```
+
+## 📦 DNS功能特性
+
+### 🔗 CNAME拉平
+DNSARC通过自动拉平技术支持APEX域名的CNAME记录：
+
+```bash
+# 传统DNS限制
+example.com.     CNAME   cdn.example.com.  # ❌ 不被允许
+
+# DNSARC的CNAME拉平
+example.com.     CNAME   cdn.example.com.  # ✅ 完全支持！
+# 自动为客户端解析为A记录
+```
+
+**工作原理：**
+1. 客户端查询 `example.com A`
+2. DNSARC发现指向 `cdn.example.com` 的CNAME记录
+3. 服务器自动解析 `cdn.example.com` 的IP地址
+4. 返回A记录响应：`example.com A 1.2.3.4`
+
+### ⚖️ 基于权重的负载均衡
+智能地在多个端点间分配流量：
+
+```bash
+# 具有不同权重的多个A记录
+api.example.com.  A  10.0.1.1  (权重: 70)  # 70%流量
+api.example.com.  A  10.0.1.2  (权重: 30)  # 30%流量
+
+# CNAME记录同样支持权重
+www.example.com.  CNAME  server1.example.com.  (权重: 80)
+www.example.com.  CNAME  server2.example.com.  (权重: 20)
+```
+
+**功能特性：**
+- 每条记录可配置权重（0-100）
+- 自动权重计算和分配
+- 权重为0时回退到随机选择
+- 同时支持A记录和CNAME记录
 
 ## 📦 部署
 
@@ -197,10 +258,17 @@ DNSARC使用gRPC和Protocol Buffers定义API，主要服务包括：
 - `DeleteZone` - 删除区域
 
 ### DNS记录服务 (DNSRecordService)
-- `CreateDNSRecord` - 创建DNS记录
+- `CreateDNSRecord` - 创建支持权重的DNS记录
 - `ListDNSRecords` - 列出DNS记录
-- `UpdateDNSRecord` - 更新DNS记录
+- `UpdateDNSRecord` - 更新DNS记录和权重
 - `DeleteDNSRecord` - 删除DNS记录
+
+**DNS记录属性：**
+- `name` - 记录名称（如www、api、@）
+- `type` - 记录类型（A、CNAME、MX、TXT等）
+- `content` - 记录值（IP地址、域名等）
+- `weight` - 负载均衡权重（0-100）
+- `ttl` - 生存时间（秒）
 
 ## 🛠️ 开发
 
@@ -226,9 +294,9 @@ dnsarc/
 │   ├── cmd/                # 命令行入口
 │   ├── internal/           # 内部包
 │   │   ├── api/           # API服务器
-│   │   ├── dns/           # DNS服务器
+│   │   ├── dns/           # 具备负载均衡的DNS服务器
 │   │   ├── handlers/      # gRPC处理器
-│   │   ├── models/        # 数据模型
+│   │   ├── models/        # 支持权重的数据模型
 │   │   └── services/      # 业务服务
 │   ├── k8s/               # Kubernetes配置
 │   └── gen/               # 生成的代码

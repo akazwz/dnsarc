@@ -151,6 +151,13 @@ func (s *Server) Start() error {
 		name = strings.TrimSuffix(name, ".")
 		name = strings.ToLower(name)
 		name, err := idna.ToASCII(name)
+		if err != nil {
+			slog.Error("failed to convert name to ASCII", "error", err, "name", name)
+			m.Rcode = dns.RcodeServerFailure
+			if err := w.WriteMsg(m); err != nil {
+				slog.Error("failed to write response", "error", err)
+			}
+		}
 		slog.Info("name", "name", name)
 		// 提取 zone（获取顶级域名）
 		zoneName, err := publicsuffix.Domain(name)
@@ -227,7 +234,6 @@ func (s *Server) Start() error {
 		}
 		// 获取 record
 		records := make([]models.DNSRecord, 0)
-		recordsA := make([]models.DNSRecord, 0)
 		start := time.Now()
 		if needQuery {
 			if cachedRecords, err := s.cache.GetRecords(context.Background(), zoneName); err != nil {
@@ -237,11 +243,6 @@ func (s *Server) Start() error {
 			}
 		}
 		slog.Info("get records", "time", time.Since(start))
-		for _, record := range records {
-			if record.Type == "A" {
-				recordsA = append(recordsA, record)
-			}
-		}
 		for _, q := range r.Question {
 			switch q.Qtype {
 			case dns.TypeSOA:
@@ -251,7 +252,9 @@ func (s *Server) Start() error {
 			case dns.TypeCAA:
 				s.handleCAA(m, q)
 			case dns.TypeA:
-				s.handleA(m, q, recordsA)
+				s.handleA(m, q, records)
+			case dns.TypeCNAME:
+				s.handleCNAME(m, q, records)
 			default:
 				m.Rcode = dns.RcodeNotImplemented
 			}
@@ -347,24 +350,115 @@ func (s *Server) handleA(m *dns.Msg, q dns.Question, records []models.DNSRecord)
 	}
 	name := strings.TrimSuffix(q.Name, ".")
 	name = strings.ToLower(name)
+	aRecords := lo.Filter(records, func(record models.DNSRecord, _ int) bool {
+		return record.Name == name && record.Type == "A"
+	})
+	cnameRecords := lo.Filter(records, func(record models.DNSRecord, _ int) bool {
+		return record.Name == name && record.Type == "CNAME"
+	})
+	if len(aRecords) > 0 {
+		record := s.selectRecordWithWeight(aRecords)
+		rr := &dns.A{
+			Hdr: dns.RR_Header{
+				Name:   q.Name,
+				Rrtype: dns.TypeA,
+				Class:  dns.ClassINET,
+				Ttl:    uint32(record.TTL),
+			},
+			A: net.ParseIP(record.Content).To4(),
+		}
+		m.Answer = append(m.Answer, rr)
+	} else if len(cnameRecords) > 0 {
+		record := s.selectRecordWithWeight(cnameRecords)
+		s.flattenCNAME(m, q, record)
+		return
+	} else {
+		m.Rcode = dns.RcodeNameError
+		return
+	}
+}
+
+func (s *Server) handleCNAME(m *dns.Msg, q dns.Question, records []models.DNSRecord) {
+	name := strings.TrimSuffix(q.Name, ".")
+	name = strings.ToLower(name)
 	records = lo.Filter(records, func(record models.DNSRecord, _ int) bool {
-		return record.Name == name
+		return record.Name == name && record.Type == "CNAME"
 	})
 	if len(records) == 0 {
 		m.Rcode = dns.RcodeNameError
 		return
 	}
-	record := records[rand.Intn(len(records))]
-	rr := &dns.A{
+	record := s.selectRecordWithWeight(records)
+	rr := &dns.CNAME{
 		Hdr: dns.RR_Header{
 			Name:   q.Name,
-			Rrtype: dns.TypeA,
+			Rrtype: dns.TypeCNAME,
 			Class:  dns.ClassINET,
 			Ttl:    uint32(record.TTL),
 		},
-		A: net.ParseIP(record.Content).To4(),
+		Target: record.Content,
 	}
 	m.Answer = append(m.Answer, rr)
+}
+
+func (s *Server) selectRecordWithWeight(records []models.DNSRecord) models.DNSRecord {
+	weights := lo.Map(records, func(record models.DNSRecord, _ int) int {
+		return record.Weight
+	})
+	totalWeight := lo.Sum(weights)
+	if totalWeight == 0 {
+		return records[rand.Intn(len(records))]
+	}
+	randomWeight := rand.Intn(totalWeight)
+	accumulatedWeight := 0
+	var record models.DNSRecord
+	for _, item := range records {
+		accumulatedWeight += item.Weight
+		if accumulatedWeight >= randomWeight {
+			record = item
+			break
+		}
+	}
+	return record
+}
+
+func (s *Server) flattenCNAME(m *dns.Msg, q dns.Question, record models.DNSRecord) {
+	targetDomain := record.Content
+	client := dns.Client{
+		Timeout: time.Second * 5,
+	}
+	msg := dns.Msg{}
+	msg.SetQuestion(dns.Fqdn(targetDomain), dns.TypeA)
+	resp, _, err := client.Exchange(&msg, "8.8.8.8:53")
+	if err != nil {
+		slog.Error("failed to resolve CNAME target", "error", err, "target", targetDomain)
+		m.Rcode = dns.RcodeServerFailure //  设置错误码
+		return
+	}
+	//  检查DNS响应码
+	if resp.Rcode != dns.RcodeSuccess {
+		slog.Warn("CNAME target resolution failed", "target", targetDomain, "rcode", resp.Rcode)
+		m.Rcode = resp.Rcode // 传递上游错误码
+		return
+	}
+	//  可以考虑处理CNAME链
+	for _, answer := range resp.Answer {
+		if aRecord, ok := answer.(*dns.A); ok {
+			rr := &dns.A{
+				Hdr: dns.RR_Header{
+					Name:   q.Name,
+					Rrtype: dns.TypeA,
+					Class:  dns.ClassINET,
+					Ttl:    uint32(record.TTL),
+				},
+				A: aRecord.A,
+			}
+			m.Answer = append(m.Answer, rr)
+		}
+	}
+	if len(m.Answer) == 0 {
+		m.Rcode = dns.RcodeNameError
+	}
 }
 
 func (s *Server) handleCAA(m *dns.Msg, q dns.Question) {

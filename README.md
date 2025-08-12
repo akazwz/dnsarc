@@ -32,16 +32,38 @@
 - 🔄 **Real-time Updates** - See DNS changes instantly across all your infrastructure
 - 🛠️ **Production Ready** - Docker containers, health checks, and monitoring included
 - 💰 **Open Source & Free** - No vendor lock-in, customize as needed
+- ⚖️ **Smart Load Balancing** - Weight-based traffic distribution with automatic failover
+- 🔗 **CNAME Flattening** - APEX domain CNAME support with automatic resolution
+
+## 🎯 Key Features
+
+### 🌐 Advanced DNS Capabilities
+- **Weight-Based Load Balancing**: Distribute traffic across multiple servers based on configurable weights
+- **CNAME Flattening**: Support CNAME records on APEX domains with automatic A record resolution
+- **Multiple Record Types**: Support for A, AAAA, CNAME, MX, TXT, NS, SOA, and CAA records
+- **Real-time Updates**: Instant DNS changes propagation via Redis pub/sub
+
+### ⚡ Performance & Reliability
+- **Smart Caching**: Multi-level caching with Redis and in-memory storage
+- **Bloom Filters**: Ultra-fast zone existence checking
+- **Weighted Selection**: Intelligent traffic distribution with customizable weights
+- **Automatic Failover**: Health-aware DNS responses
+
+### 🔧 Management & Monitoring
+- **Modern Web UI**: Intuitive React-based management interface
+- **RESTful APIs**: Complete gRPC-based API for automation
+- **Real-time Monitoring**: Live DNS query tracking and analytics
+- **User Management**: Google SSO integration with role-based access
 
 ## 🏗️ Architecture
 
 DNSARC adopts modern microservice architecture with the following core components:
 
 ### Backend Services
-- **DNS Server** (`dns`) - Authoritative DNS resolution service
+- **DNS Server** (`dns`) - Authoritative DNS resolution service with load balancing and CNAME flattening
 - **API Server** (`api`) - Backend for web management interface
 - **Database** - PostgreSQL for storing DNS records and user data
-- **Cache** - Redis for pub/sub event communication
+- **Cache** - Redis for pub/sub event communication and caching
 
 ### Frontend Application
 - **Admin Panel** - React Router v7 + TypeScript
@@ -98,6 +120,45 @@ pnpm install
 # Start development server
 pnpm dev
 ```
+
+## 📦 DNS Features
+
+### 🔗 CNAME Flattening
+DNSARC supports CNAME records on APEX domains through automatic flattening:
+
+```bash
+# Traditional DNS limitation
+example.com.     CNAME   cdn.example.com.  # ❌ Not allowed
+
+# DNSARC with CNAME flattening
+example.com.     CNAME   cdn.example.com.  # ✅ Supported!
+# Automatically resolved to A record for clients
+```
+
+**How it works:**
+1. Client queries `example.com A`
+2. DNSARC finds CNAME record pointing to `cdn.example.com`
+3. Server automatically resolves `cdn.example.com` to IP address
+4. Returns A record response: `example.com A 1.2.3.4`
+
+### ⚖️ Weight-Based Load Balancing
+Distribute traffic intelligently across multiple endpoints:
+
+```bash
+# Multiple A records with different weights
+api.example.com.  A  10.0.1.1  (weight: 70)  # 70% traffic
+api.example.com.  A  10.0.1.2  (weight: 30)  # 30% traffic
+
+# CNAME records also support weights
+www.example.com.  CNAME  server1.example.com.  (weight: 80)
+www.example.com.  CNAME  server2.example.com.  (weight: 20)
+```
+
+**Features:**
+- Configurable weights per record (0-100)
+- Automatic weight calculation and distribution
+- Fallback to random selection when weights are 0
+- Support for both A and CNAME records
 
 ## 📦 Deployment
 
@@ -197,10 +258,17 @@ DNSARC uses gRPC and Protocol Buffers to define APIs. Main services include:
 - `DeleteZone` - Delete zone
 
 ### DNS Record Service (DNSRecordService)
-- `CreateDNSRecord` - Create DNS record
+- `CreateDNSRecord` - Create DNS record with weight support
 - `ListDNSRecords` - List DNS records
-- `UpdateDNSRecord` - Update DNS record
+- `UpdateDNSRecord` - Update DNS record and weight
 - `DeleteDNSRecord` - Delete DNS record
+
+**DNS Record Properties:**
+- `name` - Record name (e.g., www, api, @)
+- `type` - Record type (A, CNAME, MX, TXT, etc.)
+- `content` - Record value (IP address, domain name, etc.)
+- `weight` - Load balancing weight (0-100)
+- `ttl` - Time to live in seconds
 
 ## 🛠️ Development
 
@@ -226,9 +294,9 @@ dnsarc/
 │   ├── cmd/                # Command line entry points
 │   ├── internal/           # Internal packages
 │   │   ├── api/           # API server
-│   │   ├── dns/           # DNS server
+│   │   ├── dns/           # DNS server with load balancing
 │   │   ├── handlers/      # gRPC handlers
-│   │   ├── models/        # Data models
+│   │   ├── models/        # Data models with weight support
 │   │   └── services/      # Business services
 │   ├── k8s/               # Kubernetes configurations
 │   └── gen/               # Generated code

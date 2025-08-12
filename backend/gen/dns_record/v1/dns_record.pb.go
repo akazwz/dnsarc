@@ -28,6 +28,7 @@ type CreateDNSRecordRequest struct {
 	Type          string                 `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
 	Content       string                 `protobuf:"bytes,4,opt,name=content,proto3" json:"content,omitempty"`
 	Ttl           int32                  `protobuf:"varint,5,opt,name=ttl,proto3" json:"ttl,omitempty"`
+	Weight        int32                  `protobuf:"varint,6,opt,name=weight,proto3" json:"weight,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -97,6 +98,13 @@ func (x *CreateDNSRecordRequest) GetTtl() int32 {
 	return 0
 }
 
+func (x *CreateDNSRecordRequest) GetWeight() int32 {
+	if x != nil {
+		return x.Weight
+	}
+	return 0
+}
+
 type DNSRecord struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -105,9 +113,10 @@ type DNSRecord struct {
 	Name          string                 `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
 	Type          string                 `protobuf:"bytes,5,opt,name=type,proto3" json:"type,omitempty"`
 	Content       string                 `protobuf:"bytes,6,opt,name=content,proto3" json:"content,omitempty"`
-	Ttl           int32                  `protobuf:"varint,7,opt,name=ttl,proto3" json:"ttl,omitempty"`
-	CreatedAt     string                 `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     string                 `protobuf:"bytes,9,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	Weight        int32                  `protobuf:"varint,7,opt,name=weight,proto3" json:"weight,omitempty"`
+	Ttl           int32                  `protobuf:"varint,8,opt,name=ttl,proto3" json:"ttl,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     string                 `protobuf:"bytes,10,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -182,6 +191,13 @@ func (x *DNSRecord) GetContent() string {
 		return x.Content
 	}
 	return ""
+}
+
+func (x *DNSRecord) GetWeight() int32 {
+	if x != nil {
+		return x.Weight
+	}
+	return 0
 }
 
 func (x *DNSRecord) GetTtl() int32 {
@@ -520,6 +536,7 @@ type UpdateDNSRecordRequest struct {
 	Type          string                 `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
 	Content       string                 `protobuf:"bytes,4,opt,name=content,proto3" json:"content,omitempty"`
 	Ttl           int32                  `protobuf:"varint,5,opt,name=ttl,proto3" json:"ttl,omitempty"`
+	Weight        int32                  `protobuf:"varint,6,opt,name=weight,proto3" json:"weight,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -585,6 +602,13 @@ func (x *UpdateDNSRecordRequest) GetContent() string {
 func (x *UpdateDNSRecordRequest) GetTtl() int32 {
 	if x != nil {
 		return x.Ttl
+	}
+	return 0
+}
+
+func (x *UpdateDNSRecordRequest) GetWeight() int32 {
+	if x != nil {
+		return x.Weight
 	}
 	return 0
 }
@@ -717,25 +741,28 @@ var File_dns_record_v1_dns_record_proto protoreflect.FileDescriptor
 
 const file_dns_record_v1_dns_record_proto_rawDesc = "" +
 	"\n" +
-	"\x1edns_record/v1/dns_record.proto\x12\rdns_record.v1\"\x89\x01\n" +
+	"\x1edns_record/v1/dns_record.proto\x12\rdns_record.v1\"\xa1\x01\n" +
 	"\x16CreateDNSRecordRequest\x12\x1b\n" +
 	"\tzone_name\x18\x01 \x01(\tR\bzoneName\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
 	"\x04type\x18\x03 \x01(\tR\x04type\x12\x18\n" +
 	"\acontent\x18\x04 \x01(\tR\acontent\x12\x10\n" +
-	"\x03ttl\x18\x05 \x01(\x05R\x03ttl\"\xe3\x01\n" +
+	"\x03ttl\x18\x05 \x01(\x05R\x03ttl\x12\x16\n" +
+	"\x06weight\x18\x06 \x01(\x05R\x06weight\"\xfb\x01\n" +
 	"\tDNSRecord\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\azone_id\x18\x02 \x01(\tR\x06zoneId\x12\x1b\n" +
 	"\tzone_name\x18\x03 \x01(\tR\bzoneName\x12\x12\n" +
 	"\x04name\x18\x04 \x01(\tR\x04name\x12\x12\n" +
 	"\x04type\x18\x05 \x01(\tR\x04type\x12\x18\n" +
-	"\acontent\x18\x06 \x01(\tR\acontent\x12\x10\n" +
-	"\x03ttl\x18\a \x01(\x05R\x03ttl\x12\x1d\n" +
+	"\acontent\x18\x06 \x01(\tR\acontent\x12\x16\n" +
+	"\x06weight\x18\a \x01(\x05R\x06weight\x12\x10\n" +
+	"\x03ttl\x18\b \x01(\x05R\x03ttl\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\b \x01(\tR\tcreatedAt\x12\x1d\n" +
+	"created_at\x18\t \x01(\tR\tcreatedAt\x12\x1d\n" +
 	"\n" +
-	"updated_at\x18\t \x01(\tR\tupdatedAt\"K\n" +
+	"updated_at\x18\n" +
+	" \x01(\tR\tupdatedAt\"K\n" +
 	"\x17CreateDNSRecordResponse\x120\n" +
 	"\x06record\x18\x01 \x01(\v2\x18.dns_record.v1.DNSRecordR\x06record\"0\n" +
 	"\x15ListDNSRecordsRequest\x12\x17\n" +
@@ -749,13 +776,14 @@ const file_dns_record_v1_dns_record_proto_rawDesc = "" +
 	"\x13GetDNSRecordRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"H\n" +
 	"\x14GetDNSRecordResponse\x120\n" +
-	"\x06record\x18\x01 \x01(\v2\x18.dns_record.v1.DNSRecordR\x06record\"|\n" +
+	"\x06record\x18\x01 \x01(\v2\x18.dns_record.v1.DNSRecordR\x06record\"\x94\x01\n" +
 	"\x16UpdateDNSRecordRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
 	"\x04type\x18\x03 \x01(\tR\x04type\x12\x18\n" +
 	"\acontent\x18\x04 \x01(\tR\acontent\x12\x10\n" +
-	"\x03ttl\x18\x05 \x01(\x05R\x03ttl\"K\n" +
+	"\x03ttl\x18\x05 \x01(\x05R\x03ttl\x12\x16\n" +
+	"\x06weight\x18\x06 \x01(\x05R\x06weight\"K\n" +
 	"\x17UpdateDNSRecordResponse\x120\n" +
 	"\x06record\x18\x01 \x01(\v2\x18.dns_record.v1.DNSRecordR\x06record\"(\n" +
 	"\x16DeleteDNSRecordRequest\x12\x0e\n" +
