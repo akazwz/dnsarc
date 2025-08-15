@@ -1,0 +1,15 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    deployment:
+      replicas: 3
+    
+    additionalArguments:
+      - "--entrypoints.dns-tcp.address=:53/tcp"
+      - "--entrypoints.dns-tcp.proxyProtocol.insecure=true"
+      - "--entrypoints.dns-udp.address=:53/udp"
+      - "--log.level=INFO"

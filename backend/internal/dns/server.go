@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"math/rand"
 	"net"
+	"net/netip"
 	"os"
 	"os/signal"
 	"strings"
@@ -18,6 +19,8 @@ import (
 	"github.com/miekg/dns"
 	"github.com/openai/openai-go"
 	"github.com/openai/openai-go/responses"
+	"github.com/oschwald/geoip2-golang/v2"
+	"github.com/pires/go-proxyproto"
 	"github.com/redis/go-redis/v9"
 	"github.com/samber/lo"
 	"github.com/weppos/publicsuffix-go/publicsuffix"
@@ -32,6 +35,7 @@ import (
 type Server struct {
 	db          *gorm.DB
 	rdb         *redis.Client
+	geoDB       *geoip2.Reader
 	config      *Config
 	cache       *DNSCache
 	bloomFilter *bloom.BloomFilter
@@ -77,6 +81,11 @@ func NewServer() *Server {
 		slog.Error("failed to connect to redis", "error", err)
 		os.Exit(1)
 	}
+	geoDB, err := database.NewGeoDB()
+	if err != nil {
+		slog.Error("failed to connect to geo db", "error", err)
+		os.Exit(1)
+	}
 	cache, err := NewDNSCache(db, 1000000, time.Minute*30)
 	if err != nil {
 		slog.Error("failed to create DNS cache", "error", err)
@@ -86,7 +95,7 @@ func NewServer() *Server {
 	go func() {
 		// 初始化bloom filter
 		zoneNames := make([]string, 0)
-		if err := db.Model(&models.Zone{}).Select("zone_name").Where("is_active = ?", true).Find(&zoneNames).Error; err != nil {
+		if err := db.Model(&models.Zone{}).Distinct("zone_name").Select("zone_name").Where("is_active = ?", true).Find(&zoneNames).Error; err != nil {
 			slog.Error("failed to get zone names for bloom filter", "error", err)
 			return
 		}
@@ -99,6 +108,7 @@ func NewServer() *Server {
 	return &Server{
 		db:           db,
 		rdb:          rdb,
+		geoDB:        geoDB,
 		config:       config,
 		cache:        cache,
 		bloomFilter:  bloomFilter,
@@ -111,7 +121,7 @@ func (s *Server) rebuildBloomFilter() {
 	slog.Info("rebuilding bloom filter")
 	bloomFilter := bloom.NewWithEstimates(1000000, 0.01)
 	zoneNames := make([]string, 0)
-	if err := s.db.Model(&models.Zone{}).Select("zone_name").Where("is_active = ?", true).Find(&zoneNames).Error; err != nil {
+	if err := s.db.Model(&models.Zone{}).Distinct("zone_name").Select("zone_name").Where("is_active = ?", true).Find(&zoneNames).Error; err != nil {
 		slog.Error("failed to get zone names for bloom filter", "error", err)
 		return
 	}
@@ -158,10 +168,8 @@ func (s *Server) Start() error {
 				slog.Error("failed to write response", "error", err)
 			}
 		}
-		slog.Info("name", "name", name)
 		// 提取 zone（获取顶级域名）
 		zoneName, err := publicsuffix.Domain(name)
-		slog.Info("zoneName", "zoneName", zoneName)
 		zoneName = strings.TrimSuffix(zoneName, ".")
 		if lo.Contains(BLACK_LIST_ZONE, zoneName) {
 			m.Rcode = dns.RcodeNameError
@@ -234,7 +242,6 @@ func (s *Server) Start() error {
 		}
 		// 获取 record
 		records := make([]models.DNSRecord, 0)
-		start := time.Now()
 		if needQuery {
 			if cachedRecords, err := s.cache.GetRecords(context.Background(), zoneName); err != nil {
 				slog.Error("failed to get records", "error", err)
@@ -242,7 +249,21 @@ func (s *Server) Start() error {
 				records = cachedRecords
 			}
 		}
-		slog.Info("get records", "time", time.Since(start))
+		ip, hasClientIP, clientIPType := clientIP(w, r)
+		if hasClientIP {
+			slog.Info("client_ip", "ip", ip, "clientIPType", clientIPType)
+			if ipNetip, ok := ipToNetip(ip); ok {
+				if city, err := s.geoDB.City(ipNetip); err != nil {
+					slog.Warn("geo lookup failed", "error", err)
+				} else {
+					slog.Info("city", "city", city.City.Names.SimplifiedChinese, "country", city.Country.Names.SimplifiedChinese)
+				}
+			} else {
+				slog.Warn("failed to convert ip to netip", "ip", ip)
+			}
+		} else {
+			slog.Info("no client ip")
+		}
 		for _, q := range r.Question {
 			switch q.Qtype {
 			case dns.TypeSOA:
@@ -263,26 +284,47 @@ func (s *Server) Start() error {
 			slog.Error("failed to write response", "error", err)
 		}
 	})
-
+	// UDP Server - proxy protocol is handled at Traefik level for UDP
 	udpServer := &dns.Server{
 		Addr:    ":53",
 		Net:     "udp",
 		Handler: mux,
 	}
+
+	// TCP Listener with Proxy Protocol
+	tcpListener, err := net.Listen("tcp", ":53")
+	if err != nil {
+		slog.Error("failed to listen TCP", "error", err)
+		return err
+	}
+	slog.Info("TCP listener created successfully")
+	
+	proxyTCPListener := &proxyproto.Listener{
+		Listener: tcpListener,
+		Policy: func(upstream net.Addr) (proxyproto.Policy, error) {
+			slog.Info("TCP proxy protocol policy check", "upstream", upstream.String())
+			return proxyproto.USE, nil
+		},
+	}
 	tcpServer := &dns.Server{
-		Addr:    ":53",
-		Net:     "tcp",
-		Handler: mux,
+		Addr:     ":53",
+		Net:      "tcp",
+		Handler:  mux,
+		Listener: proxyTCPListener,
 	}
 
 	errChan := make(chan error, 2)
 	go func() {
+		slog.Info("starting UDP server")
 		if err := udpServer.ListenAndServe(); err != nil {
+			slog.Error("UDP server error", "error", err)
 			errChan <- err
 		}
 	}()
 	go func() {
-		if err := tcpServer.ListenAndServe(); err != nil {
+		slog.Info("starting TCP server")
+		if err := tcpServer.ActivateAndServe(); err != nil {
+			slog.Error("TCP server error", "error", err)
 			errChan <- err
 		}
 	}()
@@ -562,4 +604,54 @@ func splitTXTRecord(text string) []string {
 	}
 
 	return result
+}
+
+// 优先 EDNS Client Subnet
+// ECS 说明：
+//   - ECS 是 EDNS0_SUBNET 选项，由递归解析器（如 8.8.8.8/1.1.1.1）在查询中携带，
+//     提供"客户端网段"的截断地址，用于做粗粒度的地理就近。
+//   - ECS 不一定存在（取决于解析器策略/隐私设置）。不存在时属于正常情况。
+func clientIP(w dns.ResponseWriter, r *dns.Msg) (net.IP, bool, string) {
+	// 仅在存在 EDNS Client Subnet 时返回客户端地址
+	if opt := r.IsEdns0(); opt != nil {
+		for _, o := range opt.Option {
+			if e, ok := o.(*dns.EDNS0_SUBNET); ok && e.Address != nil {
+				slog.Info("found ECS", "address", e.Address.String(), "source_netmask", e.SourceNetmask)
+				return e.Address, true, "ecs"
+			}
+		}
+	}
+
+	remoteAddr := w.RemoteAddr()
+	network := remoteAddr.Network()
+	addrStr := remoteAddr.String()
+
+	// proxy protocol listener 应该自动处理真实客户端地址
+	switch network {
+	case "tcp", "udp":
+		host, _, err := net.SplitHostPort(addrStr)
+		if err != nil {
+			return nil, false, ""
+		}
+		ip := net.ParseIP(host)
+		if ip == nil {
+			return nil, false, ""
+		}
+		return ip, true, "remote_addr"
+	default:
+		return nil, false, ""
+	}
+}
+
+func ipToNetip(ip net.IP) (netip.Addr, bool) {
+	if ip4 := ip.To4(); ip4 != nil {
+		return netip.AddrFrom4([4]byte{ip4[0], ip4[1], ip4[2], ip4[3]}), true
+	}
+	ip16 := ip.To16()
+	if ip16 == nil {
+		return netip.Addr{}, false
+	}
+	var a16 [16]byte
+	copy(a16[:], ip16)
+	return netip.AddrFrom16(a16), true
 }

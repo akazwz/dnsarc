@@ -19,6 +19,7 @@ type DNSRecord struct {
 	Content   string    `json:"content"`
 	Weight    int       `json:"weight"` // 权重, 用于负载均衡
 	TTL       int       `json:"ttl"`
+	Country   string    `json:"country"` // 国家, 用于 geo 负载均衡, 默认为空
 	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt time.Time `json:"updated_at" gorm:"autoUpdateTime"`
 }

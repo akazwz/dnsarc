@@ -12,6 +12,8 @@ require (
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/miekg/dns v1.1.67
 	github.com/openai/openai-go v1.12.0
+	github.com/oschwald/geoip2-golang/v2 v2.0.0-beta.3
+	github.com/pires/go-proxyproto v0.8.1
 	github.com/redis/go-redis/v9 v9.11.0
 	github.com/samber/lo v1.51.0
 	github.com/spf13/cobra v1.9.1
@@ -37,6 +39,7 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/oschwald/maxminddb-golang/v2 v2.0.0-beta.7 // indirect
 	github.com/spf13/pflag v1.0.7 // indirect
 	github.com/tidwall/gjson v1.18.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect

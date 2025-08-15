@@ -27,3 +27,5 @@ spec:
       services:
         - name: dnsarc-dns-service
           port: 53
+          proxyProtocol:
+            version: 2

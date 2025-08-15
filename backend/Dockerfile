@@ -9,7 +9,6 @@ RUN apk add --no-cache git
 
 # 复制go mod文件
 COPY go.mod go.sum ./
-
 # 下载依赖
 RUN go mod download
 
@@ -27,6 +26,7 @@ WORKDIR /app
 
 # 从构建阶段复制二进制文件
 COPY --from=builder /app/dnsarc .
+COPY --from=builder /app/data ./data
 
 # distroless nonroot 镜像默认用户 65532:65532
 # DNS 服务需要 CAP_NET_BIND_SERVICE 在 k8s securityContext 中设置
