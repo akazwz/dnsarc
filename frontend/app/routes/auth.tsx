@@ -9,8 +9,8 @@ import { useAuthStore } from "~/stores/auth";
 import type { Route } from "./+types/auth";
 
 export async function loader() {
-	const response = await authClient.googleLoginURL({});
-	const url = response.url;
+	//const response = await authClient.googleLoginURL({});
+	const url = "https://google.com";
 	return {
 		url,
 	};
