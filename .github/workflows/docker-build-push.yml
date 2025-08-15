@@ -2,7 +2,12 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches: [ main ]
+    branches: [ 'main' ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/docker-build-push.yml'
+  pull_request:
+    branches: [ 'main' ]
     paths:
       - 'backend/**'
       - '.github/workflows/docker-build-push.yml'
@@ -10,7 +15,6 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: dnsarc
-  VERSION: ${{ github.sha | slice(0, 7) }}
 
 jobs:
   build-and-push:
@@ -23,6 +27,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -40,14 +45,17 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ github.sha | slice(0, 7) }}
+            type=sha,format=short
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: ./backend
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            VERSION=${{ steps.meta.outputs.version }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
